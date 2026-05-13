@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebQLPT.Data;
-using WebQLPT.Models;
+using WebQLPT.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebQLPT.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly AppDbContext _context;

@@ -14,10 +14,21 @@ namespace WebQLPT.Data
         public DbSet<KhachThue> KhachThues { get; set; }
         public DbSet<ChuTro> ChuTros { get; set; }
         public DbSet<DangTin> DangTins { get; set; }
+        public DbSet<User> Users { get; set; } 
+        public DbSet<HopDong> HopDongs { get; set; }
+        public DbSet<HoaDon> HoaDons { get; set; }
+        public DbSet<HoaDonChiTiet> HoaDonChiTiets { get; set; } 
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<KhachThue>()
+                .HasOne(k => k.PhongTro)
+                .WithMany(p => p.KhachThues)
+                .HasForeignKey(k => k.PhongTroId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<DangTin>()
                 .HasOne(d => d.PhongTro)
@@ -29,6 +40,30 @@ namespace WebQLPT.Data
                 .HasOne(d => d.ChuTro)
                 .WithMany()
                 .HasForeignKey(d => d.ChuTroId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<HopDong>()
+                .HasOne(h => h.PhongTro)
+                .WithMany()
+                .HasForeignKey(h => h.PhongTroId)
+                .OnDelete(DeleteBehavior.NoAction); 
+
+            modelBuilder.Entity<HopDong>()
+                .HasOne(h => h.KhachThue)
+                .WithMany()
+                .HasForeignKey(h => h.KhachThueId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<HoaDon>()
+                .HasOne(h => h.PhongTro)
+                .WithMany()
+                .HasForeignKey(h => h.PhongTroId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<HoaDon>()
+                .HasOne(h => h.KhachThue)
+                .WithMany()
+                .HasForeignKey(h => h.KhachThueId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

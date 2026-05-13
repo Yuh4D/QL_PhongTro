@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using WebQLPT.Data;
+using WebQLPT.Helpers;
 using WebQLPT.Models;
 
 namespace WebQLPT.Controllers
 {
+    [Authorize(Roles = "admin,chutro")]
     public class ChuTroesController : Controller
     {
         private readonly AppDbContext _context;
@@ -23,6 +26,13 @@ namespace WebQLPT.Controllers
         public async Task<IActionResult> Index(string keyword)
         {
             var query = _context.ChuTros.AsQueryable();
+
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                query = query.Where(c => c.Id == chuTroId);
+            }
 
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -49,10 +59,20 @@ namespace WebQLPT.Controllers
                 return NotFound();
             }
 
+            if(User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+                if (chuTro.Id != chuTroId)
+                {
+                    return Forbid();
+                }
+            }
+
             return View(chuTro);
         }
 
         // GET: ChuTroes/Create
+        [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
             return View();
@@ -61,6 +81,7 @@ namespace WebQLPT.Controllers
         // POST: ChuTroes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,TenChuTro,SoDienThoai,Email,DiaChi")] ChuTro chuTro)
@@ -93,6 +114,15 @@ namespace WebQLPT.Controllers
             {
                 return NotFound();
             }
+
+            if(User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+                if (chuTro.Id != chuTroId)
+                {
+                    return Forbid();
+                }
+            }
             return View(chuTro);
         }
 
@@ -106,6 +136,14 @@ namespace WebQLPT.Controllers
             if (id != chuTro.Id)
             {
                 return NotFound();
+            }
+            if(User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+                if (chuTro.Id != chuTroId)
+                {
+                    return Forbid();
+                }
             }
 
             if (ModelState.IsValid)
@@ -132,6 +170,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: ChuTroes/Delete/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -150,6 +189,7 @@ namespace WebQLPT.Controllers
         }
 
         // POST: ChuTroes/Delete/5
+        [Authorize(Roles = "admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

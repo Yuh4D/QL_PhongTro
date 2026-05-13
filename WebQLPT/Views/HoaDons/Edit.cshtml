@@ -1,0 +1,24 @@
+﻿@model WebQLPT.Models.HoaDon
+
+@{
+    ViewData["Title"] = "Chỉnh sửa";
+}
+
+<h2>Chỉnh sửa hóa đơn</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="NgayTao"></label>
+        <input asp-for="NgayTao" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="HanThanhToan"></label>
+        <input asp-for="HanThanhToan" type="date" class="form-control" />
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</form>

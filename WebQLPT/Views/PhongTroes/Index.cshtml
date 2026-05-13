@@ -43,7 +43,7 @@
                 @Html.DisplayFor(modelItem => item.TenPhong)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Gia)
+                    @item.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) đ
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.TrangThai)
@@ -52,7 +52,7 @@
                 @Html.DisplayFor(modelItem => item.MoTa)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ChuTro.Id)
+                @Html.DisplayFor(modelItem => item.ChuTro.TenChuTro)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

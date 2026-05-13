@@ -1,0 +1,25 @@
+﻿@model WebQLPT.Models.HopDong
+
+@{
+    ViewData["Title"] = "Chi tiết hợp đồng";
+}
+
+<h2 class="text-center">Chi tiết hợp đồng</h2>
+
+<hr />
+
+<div class="card shadow p-4">
+    
+
+    <div>
+        @Html.Raw(Model.NoiDung)
+    </div>
+
+</div>
+
+<br />
+
+<div>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Chỉnh sửa</a>
+</div>

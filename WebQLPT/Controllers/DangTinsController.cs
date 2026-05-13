@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using WebQLPT.Data;
 using WebQLPT.Models;
 
 namespace WebQLPT.Controllers
 {
+    [Authorize]
     public class DangTinsController : Controller
     {
         private readonly AppDbContext _context;
@@ -47,6 +49,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: DangTins/Create
+        [Authorize(Roles = "admin,chutro")]
         public IActionResult Create()
         {
             ViewBag.PhongTroId = new SelectList(_context.PhongTros, "Id", "TenPhong");
@@ -59,6 +62,7 @@ namespace WebQLPT.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "admin,chutro")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,TieuDe,NoiDung,Gia,HinhAnh,PhongTroId,ChuTroId")] DangTin dangTin)
         {
@@ -78,6 +82,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: DangTins/Edit/5
+        [Authorize(Roles = "admin,chutro")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -99,6 +104,7 @@ namespace WebQLPT.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "admin,chutro")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,TieuDe,NoiDung,Gia,HinhAnh,NgayDang,PhongTroId,ChuTroId")] DangTin dangTin)
         {
@@ -133,6 +139,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: DangTins/Delete/5
+        [Authorize(Roles = "admin,chutro")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -154,6 +161,7 @@ namespace WebQLPT.Controllers
 
         // POST: DangTins/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "admin,chutro")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

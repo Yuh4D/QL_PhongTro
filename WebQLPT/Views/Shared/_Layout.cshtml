@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 </head>
+
+
+
 <body>
     <div class="app-root d-flex">
         <aside class="sidebar bg-white border-end">
@@ -23,7 +26,7 @@
                 <a class="nav-link d-flex align-items-center" asp-controller="ChuTroes" asp-action="Index"><i class="bi bi-house-fill me-2"></i>Chủ trọ</a>
                 <a class="nav-link d-flex align-items-center" asp-controller="DangTins" asp-action="Index"><i class="bi bi-pencil-square me-2"></i>Đăng tin</a>
                 <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-chat-left-text me-2"></i>Đánh giá</a>
-                <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-receipt me-2"></i>Hóa đơn</a>
+                <a class="nav-link d-flex align-items-center" asp-controller="HoaDons" asp-action="Index"><i class="bi bi-receipt me-2"></i>Hóa đơn</a>
                 <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-envelope me-2"></i>Liên hệ</a>
             </nav>
         </aside>
@@ -52,7 +55,21 @@
                             <div></div>
                         }
                         <div class="d-flex align-items-center">
-                        <div class="me-3 text-muted small">Xin chào, Admin</div>
+                        <div class="me-3 text-muted small">                   
+
+                            @if (User.Identity.IsAuthenticated && User.Identity != null)
+                            {
+                                <span class ="me-2">
+                                    Xin chào @User.Identity.Name
+                                </span>
+
+                                <a asp-controller="Account"
+                                       asp-action="Logout"
+                                       class="btn btn-sm btn-outline-danger">
+                                    Đăng xuất
+                                </a>
+                            }
+                        </div>
                             <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-person-circle"></i></button>
                     </div>
                 </div>

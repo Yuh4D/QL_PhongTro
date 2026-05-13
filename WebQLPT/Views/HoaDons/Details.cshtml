@@ -1,0 +1,66 @@
+﻿@model WebQLPT.Models.HoaDon
+
+<h2 class="mb-4">🧾 Chi tiết hóa đơn</h2>
+
+<div class="card p-4 shadow">
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <p><strong>Chủ trọ:</strong> @Model.PhongTro?.ChuTro?.TenChuTro</p>
+            <p><strong>Phòng:</strong> @Model.PhongTro?.TenPhong</p>
+            <p><strong>Khách thuê:</strong> @Model.KhachThue?.TenKhach</p>
+        </div>
+
+        <div class="col-md-6 text-end">
+            <p><strong>Ngày tạo:</strong> @Model.NgayTao.ToString("dd/MM/yyyy")</p>
+            <p><strong>Hạn thanh toán:</strong> @Model.HanThanhToan.ToString("dd/MM/yyyy")</p>
+            <p>
+                <strong>Trạng thái:</strong>
+                <span class="badge bg-warning">@Model.TrangThai</span>
+            </p>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>STT</th>
+                <th>Nội dung</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Hệ số</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int stt = 1;
+            }
+
+            @foreach (var item in Model.HoaDonChiTiets)
+            {
+                <tr>
+                    <td>@stt</td>
+                    <td>@item.NoiDung</td>
+                    <td>@item.DonGia.ToString("N0")</td>
+                    <td>@item.SoLuong</td>
+                    <td>@item.HeSo</td>
+                    <td>@item.ThanhTien.ToString("N0")</td>
+                </tr>
+                stt++;
+            }
+        </tbody>
+    </table>
+
+    <h4 class="text-end text-danger">
+        Tổng tiền: @Model.TongTien.ToString("N0") VNĐ
+    </h4>
+
+    <div class="text-end mt-3">
+        <a asp-action="ExportPdf" asp-route-id="@Model.Id" class="btn btn-danger">
+            🖨 In PDF
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
+
+</div>

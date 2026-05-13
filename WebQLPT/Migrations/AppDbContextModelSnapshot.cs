@@ -17,10 +17,51 @@ namespace WebQLPT.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ChuTroId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("KhachThueId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChuTroId");
+
+                    b.HasIndex("KhachThueId");
+
+                    b.ToTable("Users");
+                });
 
             modelBuilder.Entity("WebQLPT.Models.ChuTro", b =>
                 {
@@ -31,19 +72,15 @@ namespace WebQLPT.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DiaChi")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SoDienThoai")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenChuTro")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -92,6 +129,110 @@ namespace WebQLPT.Migrations
                     b.ToTable("DangTins");
                 });
 
+            modelBuilder.Entity("WebQLPT.Models.HoaDon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("HanThanhToan")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("KhachThueId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PhongTroId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TongTien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TrangThai")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KhachThueId");
+
+                    b.HasIndex("PhongTroId");
+
+                    b.ToTable("HoaDons");
+                });
+
+            modelBuilder.Entity("WebQLPT.Models.HoaDonChiTiet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("DonGia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("HeSo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("HoaDonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NoiDung")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ThanhTien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HoaDonId");
+
+                    b.ToTable("HoaDonChiTiets");
+                });
+
+            modelBuilder.Entity("WebQLPT.Models.HopDong", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("KhachThueId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayBatDau")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayKetThuc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PhongTroId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TienCoc")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KhachThueId");
+
+                    b.HasIndex("PhongTroId");
+
+                    b.ToTable("HopDongs");
+                });
+
             modelBuilder.Entity("WebQLPT.Models.KhachThue", b =>
                 {
                     b.Property<int>("Id")
@@ -101,21 +242,24 @@ namespace WebQLPT.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CCCD")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("NgayThue")
+                    b.Property<bool>("DangO")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("NgayKetThuc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NgayThue")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PhongTroId")
                         .HasColumnType("int");
 
                     b.Property<string>("SoDienThoai")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenKhach")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -140,15 +284,12 @@ namespace WebQLPT.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("MoTa")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenPhong")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrangThai")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -156,6 +297,21 @@ namespace WebQLPT.Migrations
                     b.HasIndex("ChuTroId");
 
                     b.ToTable("PhongTros");
+                });
+
+            modelBuilder.Entity("User", b =>
+                {
+                    b.HasOne("WebQLPT.Models.ChuTro", "ChuTro")
+                        .WithMany()
+                        .HasForeignKey("ChuTroId");
+
+                    b.HasOne("WebQLPT.Models.KhachThue", "KhachThue")
+                        .WithMany()
+                        .HasForeignKey("KhachThueId");
+
+                    b.Navigation("ChuTro");
+
+                    b.Navigation("KhachThue");
                 });
 
             modelBuilder.Entity("WebQLPT.Models.DangTin", b =>
@@ -177,12 +333,61 @@ namespace WebQLPT.Migrations
                     b.Navigation("PhongTro");
                 });
 
+            modelBuilder.Entity("WebQLPT.Models.HoaDon", b =>
+                {
+                    b.HasOne("WebQLPT.Models.KhachThue", "KhachThue")
+                        .WithMany()
+                        .HasForeignKey("KhachThueId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebQLPT.Models.PhongTro", "PhongTro")
+                        .WithMany()
+                        .HasForeignKey("PhongTroId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("KhachThue");
+
+                    b.Navigation("PhongTro");
+                });
+
+            modelBuilder.Entity("WebQLPT.Models.HoaDonChiTiet", b =>
+                {
+                    b.HasOne("WebQLPT.Models.HoaDon", "HoaDon")
+                        .WithMany("HoaDonChiTiets")
+                        .HasForeignKey("HoaDonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HoaDon");
+                });
+
+            modelBuilder.Entity("WebQLPT.Models.HopDong", b =>
+                {
+                    b.HasOne("WebQLPT.Models.KhachThue", "KhachThue")
+                        .WithMany()
+                        .HasForeignKey("KhachThueId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebQLPT.Models.PhongTro", "PhongTro")
+                        .WithMany()
+                        .HasForeignKey("PhongTroId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("KhachThue");
+
+                    b.Navigation("PhongTro");
+                });
+
             modelBuilder.Entity("WebQLPT.Models.KhachThue", b =>
                 {
                     b.HasOne("WebQLPT.Models.PhongTro", "PhongTro")
                         .WithMany("KhachThues")
                         .HasForeignKey("PhongTroId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("PhongTro");
@@ -202,6 +407,11 @@ namespace WebQLPT.Migrations
             modelBuilder.Entity("WebQLPT.Models.ChuTro", b =>
                 {
                     b.Navigation("PhongTros");
+                });
+
+            modelBuilder.Entity("WebQLPT.Models.HoaDon", b =>
+                {
+                    b.Navigation("HoaDonChiTiets");
                 });
 
             modelBuilder.Entity("WebQLPT.Models.PhongTro", b =>

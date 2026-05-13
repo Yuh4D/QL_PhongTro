@@ -1,0 +1,72 @@
+﻿@model IEnumerable<WebQLPT.Models.HoaDon>
+
+@{
+    ViewData["Title"] = "Danh sách hóa đơn";
+}
+
+<h2 class="mb-4">📄 Danh sách hóa đơn</h2>
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">
+        ➕ Tạo hóa đơn
+    </a>
+</div>
+
+<div class="card shadow p-3">
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Phòng</th>
+                <th>Khách thuê</th>
+                <th>Ngày tạo</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th width="220px">Chức năng</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.PhongTro?.TenPhong</td>
+
+                    <td>@item.KhachThue?.TenKhach</td>
+
+                    <td class="text-center">
+                        @item.NgayTao.ToString("dd/MM/yyyy")
+                    </td>
+
+                    <td class="text-end text-danger fw-bold">
+                        @item.TongTien.ToString("N0") VNĐ
+                    </td>
+
+                    <td class="text-center">
+                        @if (item.TrangThai == "Đã thanh toán")
+                        {
+                            <span class="badge bg-success">Đã thanh toán</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                        }
+                    </td>
+
+                    <td class="text-center">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                             Xem
+                        </a>
+
+                        <a asp-action="ExportPdf" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                             PDF
+                        </a>
+
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                             Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

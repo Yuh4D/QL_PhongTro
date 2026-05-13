@@ -28,9 +28,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.NgayThue)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhongTro)
-            </th>
+            <th>Ngày kết thúc</th>
+            <th>Trạng thái</th>
+            <th>@Html.DisplayNameFor(model => model.PhongTro)</th>
             <th></th>
         </tr>
     </thead>
@@ -40,7 +40,22 @@
                 <td>@item.TenKhach</td>
                 <td>@item.SoDienThoai</td>
                 <td>@item.CCCD</td>
-                <td>@item.NgayThue.ToString("dd/MM/yyyy")</td>
+                <td>@(item.NgayThue.HasValue? item.NgayThue.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>
+                    @(item.NgayKetThuc.HasValue
+                        ? item.NgayKetThuc.Value.ToString("dd/MM/yyyy")
+                        : "Chưa kết thúc")
+                </td>
+                <td>
+                    @if (item.DangO)
+                    {
+                        <span class="badge bg-success">Đang ở</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Đã rời</span>
+                    }
+                </td>
                 <td>@item.PhongTro?.TenPhong</td>
                 <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

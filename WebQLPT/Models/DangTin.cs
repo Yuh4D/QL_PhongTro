@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebQLPT.Models
 {
@@ -14,6 +15,7 @@ namespace WebQLPT.Models
         public string NoiDung { get; set; }
 
         [Display(Name = "Giá")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Gia { get; set; }
 
         [Display(Name = "Hình ảnh")]
@@ -26,11 +28,13 @@ namespace WebQLPT.Models
         public int PhongTroId { get; set; }
 
         [ValidateNever]
+        [Display(Name = "Phòng trọ")]
         public PhongTro PhongTro { get; set; }
 
         public int ChuTroId { get; set; }
 
         [ValidateNever]
+        [Display(Name = "Chủ trọ")]
         public ChuTro ChuTro { get; set; }
     }
 }

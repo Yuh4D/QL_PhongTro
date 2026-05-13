@@ -10,23 +10,23 @@ namespace WebQLPT.Models
         public int Id { get; set; }
 
         [Display(Name = "Tên phòng")]
-        public string TenPhong { get; set; }
+        public string? TenPhong { get; set; }
 
         [Display(Name = "Giá phòng")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Gia { get; set; }
 
         [Display(Name = "Trạng thái")]
-        public string TrangThai { get; set; }
+        public string? TrangThai { get; set; }
 
         [Display(Name = "Mô tả")]
-        public string MoTa { get; set; }
+        public string? MoTa { get; set; }
 
         [Display(Name = "Chủ trọ")]
         public int ChuTroId { get; set; }
 
         [ValidateNever]
-        public ChuTro ChuTro { get; set; }
+        public ChuTro? ChuTro { get; set; }
 
         [ValidateNever]
         public List<KhachThue> KhachThues { get; set; }

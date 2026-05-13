@@ -46,19 +46,26 @@
                 @Html.DisplayFor(modelItem => item.NoiDung)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Gia)
+                    @item.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) đ
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.HinhAnh)
+                    @if (!string.IsNullOrEmpty(item.HinhAnh))
+                    {
+                        <img src="@item.HinhAnh" width="150" />
+                    }
+                    else
+                    {
+                        <span>Không có ảnh</span>
+                    }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.NgayDang)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PhongTro.Id)
+                    @item.PhongTro?.TenPhong
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ChuTro.Id)
+                    @item.ChuTro?.TenChuTro
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

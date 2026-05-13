@@ -60,4 +60,36 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <!-- Import SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            Swal.fire({
+            icon: 'error',
+            title: 'Bạn không thể chọn phòng này!',
+            text: @Html.Raw(Json.Serialize(TempData["Error"])),
+            confirmButtonText: 'Đã hiểu',
+            confirmButtonColor: '#e74c3c',
+            background: '#fff',
+            backdrop: 'rgba(0,0,0,0.4)'
+            });
+        </script>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: @Html.Raw(Json.Serialize(TempData["Success"])),
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#3085d6'
+            });
+        </script>
+    }
 }
+

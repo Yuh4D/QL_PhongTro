@@ -1,0 +1,61 @@
+﻿@model WebQLPT.ViewModels.RegisterViewModel
+
+<h2>Đăng ký chủ trọ</h2>
+
+<form asp-action="Register" method="post">
+
+    <div asp-validation-summary="All" style="color:red"></div>
+
+    <div>
+        <label asp-for="Username"></label>
+        <input asp-for="Username" />
+    </div>
+
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" />
+    </div>
+
+    <div>
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" />
+    </div>
+
+    <div>
+        <label asp-for="TenChuTro"></label>
+        <input asp-for="TenChuTro" />
+    </div>
+
+    <div>
+        <label asp-for="SoDienThoai"></label>
+        <input asp-for="SoDienThoai" />
+    </div>
+
+    <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+    </div>
+
+    <div>
+        <label asp-for="DiaChi"></label>
+        <input asp-for="DiaChi" />
+    </div>
+
+    <button type="submit">
+        Đăng ký
+    </button>
+
+</form>
+
+@if (TempData["Success"] != null)
+{
+    <p style="color:green">
+        @TempData["Success"]
+    </p>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

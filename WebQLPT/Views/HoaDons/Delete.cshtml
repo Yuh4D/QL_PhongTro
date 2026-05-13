@@ -1,0 +1,19 @@
+﻿@model WebQLPT.Models.HoaDon
+
+@{
+    ViewData["Title"] = "Xóa hóa đơn";
+}
+
+<h3>Bạn có chắc muốn xóa?</h3>
+
+<div>
+    <p><b>Phòng:</b> @Model.PhongTro?.TenPhong</p>
+    <p><b>Khách:</b> @Model.KhachThue?.TenKhach</p>
+    <p><b>Tổng tiền:</b> @Model.TongTien</p>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <input type="submit" value="Xóa" class="btn btn-danger" />
+    <a asp-action="Index">Hủy</a>
+</form>

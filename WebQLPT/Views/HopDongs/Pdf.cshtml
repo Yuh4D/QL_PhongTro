@@ -1,0 +1,38 @@
+﻿@model WebQLPT.Models.HopDong
+
+@{
+    Layout = null; 
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+            body {
+                font-family: Arial;
+                padding: 40px;
+                line-height: 1.6;
+            }
+
+            h2 {
+                text-align: center;
+            }
+
+            .section {
+                margin-bottom: 10px;
+            }
+
+            .sign {
+                margin-top: 50px;
+                display: flex;
+                justify-content: space-between;
+            }
+    </style>
+</head>
+<body>
+
+    @Html.Raw(Model.NoiDung)
+
+</body>
+</html>
