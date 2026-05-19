@@ -1,0 +1,30 @@
+﻿@model IEnumerable<WebQLPT.Models.HopDong>
+
+<h2>Hợp đồng của tôi</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Phòng</th>
+            <th>Ngày bắt đầu</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PhongTro?.TenPhong</td>
+                <td>@item.NgayBatDau</td>
+
+                <td>
+                    <a asp-action="Details"
+                           asp-route-id="@item.Id">
+                        Chi tiết
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

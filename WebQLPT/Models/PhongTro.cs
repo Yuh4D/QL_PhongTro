@@ -22,10 +22,11 @@ namespace WebQLPT.Models
         [Display(Name = "Mô tả")]
         public string? MoTa { get; set; }
 
-        [Display(Name = "Chủ trọ")]
+       
         public int ChuTroId { get; set; }
 
         [ValidateNever]
+        [Display(Name = "Chủ trọ")]
         public ChuTro? ChuTro { get; set; }
 
         [ValidateNever]

@@ -1,0 +1,24 @@
+﻿@model WebQLPT.Models.KhachThue
+
+<h2>Phòng của tôi</h2>
+
+<div class="card p-3">
+
+    <h4>@Model.PhongTro?.TenPhong</h4>
+
+    <p>
+        <strong>Giá:</strong>
+        @Model.PhongTro?.Gia
+    </p>
+
+    <p>
+        <strong>Chủ trọ:</strong>
+        @Model.PhongTro?.ChuTro?.TenChuTro
+    </p>
+
+    <p>
+        <strong>SĐT:</strong>
+        @Model.PhongTro?.ChuTro?.SoDienThoai
+    </p>
+
+</div>

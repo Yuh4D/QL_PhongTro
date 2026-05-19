@@ -1,0 +1,92 @@
+﻿@model IEnumerable<User>
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+}
+
+<h2>Quản lý tài khoản</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Approved</th>
+            <th>Liên kết</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Username</td>
+
+                <td>@item.Role</td>
+
+                <td>
+                    @if (item.IsApproved)
+                    {
+                        <span class="text-success">
+                            Đã duyệt
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">
+                            Chưa duyệt
+                        </span>
+                    }
+                </td>
+
+                <td>
+                    @if (item.Role == "chutro")
+                    {
+                        <span>
+                            Chủ trọ:
+                            @item.ChuTro?.TenChuTro
+                        </span>
+                    }
+
+                    @if (item.Role == "khachthue")
+                    {
+                        <span>
+                            Khách thuê:
+                            @item.KhachThue?.TenKhach
+                        </span>
+                    }
+                </td>
+
+                <td>
+                    @if (!item.IsApproved)
+                    {
+                        <a asp-action="Approve"
+                               asp-route-id="@item.Id"
+                               class="btn btn-success btn-sm">
+                            Duyệt
+                        </a>
+                    }
+                    else
+                    {
+                        @if (item.Role != "admin")
+                        {
+                            <a asp-action="Lock"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-danger btn-sm">
+                                Khóa
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

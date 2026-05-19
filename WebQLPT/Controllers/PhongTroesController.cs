@@ -286,5 +286,24 @@ namespace WebQLPT.Controllers
         {
             return _context.PhongTros.Any(e => e.Id == id);
         }
+
+
+        [Authorize(Roles = "khachthue")]
+        public async Task<IActionResult> MyRoom()
+        {
+            var khachThueId = UserHelper.GetKhachThueId(User);
+
+            var khach = await _context.KhachThues
+                .Include(k => k.PhongTro)
+                    .ThenInclude(p => p.ChuTro)
+                .FirstOrDefaultAsync(k => k.Id == khachThueId);
+
+            if (khach == null)
+            {
+                return NotFound();
+            }
+
+            return View(khach);
+        }
     }
 }

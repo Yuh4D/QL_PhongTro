@@ -1,0 +1,40 @@
+﻿@model IEnumerable<WebQLPT.Models.HoaDon>
+
+<h2>Hóa đơn của tôi</h2>
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>Phòng</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>@item.PhongTro?.TenPhong</td>
+
+                <td>@item.TongTien</td>
+
+                <td>@item.TrangThai</td>
+
+                <td>
+                    <a asp-action="Details"
+                           asp-route-id="@item.Id">
+                        Chi tiết
+                    </a>
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

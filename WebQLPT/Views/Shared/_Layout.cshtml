@@ -20,14 +20,139 @@
                 <a class="navbar-brand mb-0" asp-area="" asp-controller="Home" asp-action="Index">WebQLPT</a>
             </div>
             <nav class="nav flex-column p-2">
-                <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="Index"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                <a class="nav-link d-flex align-items-center" asp-controller="KhachThues" asp-action="Index"><i class="bi bi-person-fill me-2"></i>Khách thuê</a>
-                <a class="nav-link d-flex align-items-center" asp-controller="PhongTroes" asp-action="Index"><i class="bi bi-building me-2"></i>Phòng trọ</a>
-                <a class="nav-link d-flex align-items-center" asp-controller="ChuTroes" asp-action="Index"><i class="bi bi-house-fill me-2"></i>Chủ trọ</a>
-                <a class="nav-link d-flex align-items-center" asp-controller="DangTins" asp-action="Index"><i class="bi bi-pencil-square me-2"></i>Đăng tin</a>
-                <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-chat-left-text me-2"></i>Đánh giá</a>
-                <a class="nav-link d-flex align-items-center" asp-controller="HoaDons" asp-action="Index"><i class="bi bi-receipt me-2"></i>Hóa đơn</a>
-                <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-envelope me-2"></i>Liên hệ</a>
+
+                
+                <a class="nav-link d-flex align-items-center"
+                       asp-controller="Home"
+                       asp-action="Index">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    Dashboard
+                </a>
+
+                
+                @if (User.IsInRole("admin"))
+                {
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="KhachThues"
+                           asp-action="Index">
+                        <i class="bi bi-person-fill me-2"></i>
+                        Khách thuê
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="PhongTroes"
+                           asp-action="Index">
+                        <i class="bi bi-building me-2"></i>
+                        Phòng trọ
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="ChuTroes"
+                           asp-action="Index">
+                        <i class="bi bi-house-fill me-2"></i>
+                        Chủ trọ
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="DangTins"
+                           asp-action="Index">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Đăng tin
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="HopDongs"
+                           asp-action="Index">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Hợp đồng
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="HoaDons"
+                           asp-action="Index">
+                        <i class="bi bi-receipt me-2"></i>
+                        Hóa đơn
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="Users"
+                           asp-action="Index">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Quản lý tài khoản
+                    </a>
+                }
+
+                
+                @if (User.IsInRole("chutro"))
+                {
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="KhachThues"
+                           asp-action="Index">
+                        <i class="bi bi-person-fill me-2"></i>
+                        Khách thuê
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="PhongTroes"
+                           asp-action="Index">
+                        <i class="bi bi-building me-2"></i>
+                        Phòng trọ
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="DangTins"
+                           asp-action="Index">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Đăng tin
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="HopDongs"
+                           asp-action="Index">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Hợp đồng
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="HoaDons"
+                           asp-action="Index">
+                        <i class="bi bi-receipt me-2"></i>
+                        Hóa đơn
+                    </a>
+                }
+
+                
+                @if (User.IsInRole("khachthue"))
+                {
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="PhongTroes"
+                           asp-action="MyRoom">
+                        <i class="bi bi-house-door me-2"></i>
+                        Phòng của tôi
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="HopDongs"
+                           asp-action="MyContracts">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Hợp đồng của tôi
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="HoaDons"
+                           asp-action="MyBills">
+                        <i class="bi bi-receipt me-2"></i>
+                        Hóa đơn của tôi
+                    </a>
+
+                    <a class="nav-link d-flex align-items-center"
+                           asp-controller="DangTins"
+                           asp-action="Index">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Đăng tin
+                    </a>
+                }
+
             </nav>
         </aside>
         <div class="content flex-fill d-flex flex-column">

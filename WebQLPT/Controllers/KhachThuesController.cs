@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using WebQLPT.Data;
 using WebQLPT.Models;
 using WebQLPT.Helpers;
+using WebQLPT.ViewModels;
 
 namespace WebQLPT.Controllers
 {
@@ -85,18 +86,29 @@ namespace WebQLPT.Controllers
         // GET: KhachThues/Create
         public IActionResult Create()
         {
-            var phongTros = _context.PhongTros.AsQueryable();
-
-        
-            if (User.IsInRole("chutro"))
+            
+            if (User.IsInRole("admin"))
             {
-                var chuTroId = UserHelper.GetChuTroId(User);
+                ViewData["PhongTroId"] =
+                    new SelectList(_context.PhongTros,
+                        "Id",
+                        "TenPhong");
 
-                phongTros = phongTros
-                    .Where(p => p.ChuTroId == chuTroId);
+                return View();
             }
 
-            ViewData["PhongTroId"] = new SelectList(phongTros, "Id", "TenPhong");
+           
+            var chuTroId = UserHelper.GetChuTroId(User);
+
+            var phongTroList = _context.PhongTros
+                .Where(p => p.ChuTroId == chuTroId)
+                .ToList();
+
+            ViewData["PhongTroId"] =
+                new SelectList(phongTroList,
+                    "Id",
+                    "TenPhong");
+
             return View();
         }
 
@@ -105,56 +117,78 @@ namespace WebQLPT.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TenKhach,SoDienThoai,CCCD,NgayThue,PhongTroId")] KhachThue khachThue)
+        public async Task<IActionResult> Create(CreateKhachThueViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(khachThue);
+                return View(model);
             }
 
-            // Chủ trọ chỉ được tạo khách cho phòng mình
+            // Kiểm tra username
+            var existedUser = _context.Users
+                .FirstOrDefault(x => x.Username == model.Username);
+
+            if (existedUser != null)
+            {
+                ModelState.AddModelError("",
+                    "Username đã tồn tại");
+
+                return View(model);
+            }
+
+            // Kiểm tra phòng tồn tại
+            var phong = await _context.PhongTros
+                .FirstOrDefaultAsync(p => p.Id == model.PhongTroId);
+
+            if (phong == null)
+            {
+                return NotFound();
+            }
+
+            // CHỦ TRỌ chỉ được tạo khách phòng mình
             if (User.IsInRole("chutro"))
             {
                 var chuTroId = UserHelper.GetChuTroId(User);
 
-                var phong = await _context.PhongTros
-                    .FirstOrDefaultAsync(p =>
-                        p.Id == khachThue.PhongTroId);
-
-                if (phong == null ||
-                    phong.ChuTroId != chuTroId)
+                if (phong.ChuTroId != chuTroId)
                 {
                     return Forbid();
                 }
             }
 
-            // Không được thuê phòng đã có khách
+            // Kiểm tra phòng đã có khách chưa
             var daCoKhach = await _context.KhachThues
-                .AnyAsync(k => k.PhongTroId == khachThue.PhongTroId);
+                .AnyAsync(k => k.PhongTroId == model.PhongTroId);
 
             if (daCoKhach)
             {
                 TempData["Error"] =
-                    "Phòng này đã có người thuê!";
+                    "Phòng đã có khách thuê";
 
                 return RedirectToAction(nameof(Create));
             }
 
             // Tạo khách thuê
+            var khachThue = new KhachThue
+            {
+                TenKhach = model.TenKhach,
+                SoDienThoai = model.SoDienThoai,
+                CCCD = model.CCCD,
+                NgayThue = DateTime.Now,
+                PhongTroId = model.PhongTroId
+            };
+
             _context.KhachThues.Add(khachThue);
 
             await _context.SaveChangesAsync();
 
-            // AUTO TẠO USER ACCOUNT
-            var username =
-                khachThue.SoDienThoai;
+            // Cập nhật trạng thái phòng
+            phong.TrangThai = "Đã thuê";
 
-            var password =
-                "123456";
-
+            // Tạo user login
             var user = new User
             {
-                Username = username,
+                Username = model.Username,
 
                 Role = "khachthue",
 
@@ -163,25 +197,17 @@ namespace WebQLPT.Controllers
                 KhachThueId = khachThue.Id
             };
 
-            user.PasswordHash = _passwordHasher
-                .HashPassword(user, password);
+            user.PasswordHash =
+                _passwordHasher.HashPassword(
+                    user,
+                    model.Password);
 
             _context.Users.Add(user);
-
-            // Update trạng thái phòng
-            var phongTro = await _context.PhongTros
-                .FindAsync(khachThue.PhongTroId);
-
-            if (phongTro != null)
-            {
-                phongTro.TrangThai = "Đã thuê";
-            }
 
             await _context.SaveChangesAsync();
 
             TempData["Success"] =
-                $"Đã tạo tài khoản khách thuê. " +
-                $"Username: {username} - Password: 123456";
+                "Tạo khách thuê thành công";
 
             return RedirectToAction(nameof(Index));
         }

@@ -467,5 +467,18 @@ namespace WebQLPT.Controllers
                 FileName = $"HoaDon_{id}.pdf"
             };
         }
+
+        [Authorize(Roles = "khachthue")]
+        public async Task<IActionResult> MyBills()
+        {
+            var khachThueId = UserHelper.GetKhachThueId(User);
+
+            var hoaDons = await _context.HoaDons
+                .Include(h => h.PhongTro)
+                .Where(h => h.KhachThueId == khachThueId)
+                .ToListAsync();
+
+            return View(hoaDons);
+        }
     }
 }

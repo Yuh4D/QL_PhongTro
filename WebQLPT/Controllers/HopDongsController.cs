@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebQLPT.Data;
+using WebQLPT.Helpers;
 using WebQLPT.Models;
 using WebQLPT.Services;
 
@@ -220,6 +221,19 @@ namespace WebQLPT.Controllers
             {
                 FileName = $"HopDong_{id}.pdf"
             };
+        }
+
+        [Authorize(Roles = "khachthue")]
+        public async Task<IActionResult> MyContracts()
+        {
+            var khachThueId = UserHelper.GetKhachThueId(User);
+
+            var hopDongs = await _context.HopDongs
+                .Include(h => h.PhongTro)
+                .Where(h => h.KhachThueId == khachThueId)
+                .ToListAsync();
+
+            return View(hopDongs);
         }
     }
 }
