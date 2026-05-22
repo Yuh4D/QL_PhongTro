@@ -1,45 +1,100 @@
 ﻿@model WebQLPT.Models.ChuTro
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Xóa chủ trọ";
+    Layout = "_LayoutAdmin";
 }
 
-<h1>Delete</h1>
+<div class="container-fluid">
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>ChuTro</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TenChuTro)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TenChuTro)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SoDienThoai)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SoDienThoai)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DiaChi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DiaChi)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <div class="mb-4">
+
+        <h2 class="fw-bold text-danger">
+            🗑 Xóa chủ trọ
+        </h2>
+
+        <p class="text-muted mb-0">
+            Hành động này không thể hoàn tác
+        </p>
+
+    </div>
+
+    <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body p-4">
+
+            <div class="alert alert-warning">
+
+                Bạn có chắc muốn xóa chủ trọ này không?
+
+            </div>
+
+            <div class="row mb-4">
+
+                <div class="col-md-6">
+                    <label class="text-muted small">Tên chủ trọ</label>
+
+                    <div class="fw-semibold fs-5">
+                        @Model.TenChuTro
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="text-muted small">Số điện thoại</label>
+
+                    <div class="fw-semibold fs-5">
+                        @Model.SoDienThoai
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row mb-4">
+
+                <div class="col-md-6">
+                    <label class="text-muted small">Email</label>
+
+                    <div class="fw-semibold">
+                        @Model.Email
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="text-muted small">Địa chỉ</label>
+
+                    <div class="fw-semibold">
+                        @Model.DiaChi
+                    </div>
+                </div>
+
+            </div>
+
+            <form asp-action="Delete">
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-danger">
+
+                        🗑 Xóa chủ trọ
+
+                    </button>
+
+                    <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+
+                        Hủy
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </div>

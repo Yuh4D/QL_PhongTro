@@ -2,71 +2,219 @@
 
 @{
     ViewData["Title"] = "Danh sách hóa đơn";
+    Layout = "_LayoutAdmin";
 }
 
-<h2 class="mb-4">📄 Danh sách hóa đơn</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<div class="mb-3">
-    <a asp-action="Create" class="btn btn-success">
-        ➕ Tạo hóa đơn
+    <div>
+
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-receipt-cutoff me-2"></i>
+            Danh sách hóa đơn
+        </h2>
+
+        <p class="text-muted mb-0">
+            Quản lý hóa đơn và tình trạng thanh toán
+        </p>
+
+    </div>
+
+    <a asp-action="Create"
+           class="btn btn-success">
+
+        <i class="bi bi-plus-circle"></i>
+        Tạo hóa đơn
+
     </a>
+
 </div>
 
-<div class="card shadow p-3">
-    <table class="table table-hover table-bordered align-middle">
-        <thead class="table-dark text-center">
-            <tr>
-                <th>Phòng</th>
-                <th>Khách thuê</th>
-                <th>Ngày tạo</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th width="220px">Chức năng</th>
-            </tr>
-        </thead>
+<form method="get"
+      asp-action="Index"
+      class="row g-2 mb-4">
 
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <div class="col-md-4">
+
+        <input type="text"
+               name="keyword"
+               class="form-control"
+               placeholder="Tìm hóa đơn..." />
+
+    </div>
+
+    <div class="col-auto">
+
+        <button type="submit"
+                class="btn btn-primary">
+
+            🔍 Tìm kiếm
+
+        </button>
+
+    </div>
+
+</form>
+
+<div class="card shadow-sm border-0 rounded-4">
+
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-dark text-center">
+
                 <tr>
-                    <td>@item.PhongTro?.TenPhong</td>
-
-                    <td>@item.KhachThue?.TenKhach</td>
-
-                    <td class="text-center">
-                        @item.NgayTao.ToString("dd/MM/yyyy")
-                    </td>
-
-                    <td class="text-end text-danger fw-bold">
-                        @item.TongTien.ToString("N0") VNĐ
-                    </td>
-
-                    <td class="text-center">
-                        @if (item.TrangThai == "Đã thanh toán")
-                        {
-                            <span class="badge bg-success">Đã thanh toán</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
-                        }
-                    </td>
-
-                    <td class="text-center">
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
-                             Xem
-                        </a>
-
-                        <a asp-action="ExportPdf" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                             PDF
-                        </a>
-
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
-                             Xóa
-                        </a>
-                    </td>
+                    <th>Phòng</th>
+                    <th>Khách thuê</th>
+                    <th>Ngày tạo</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th width="220">Thao tác</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td class="fw-semibold">
+
+                            <i class="bi bi-building me-1 text-primary"></i>
+                            @item.PhongTro?.TenPhong
+
+                        </td>
+
+                        <td>
+
+                            <i class="bi bi-person-fill me-1 text-success"></i>
+                            @item.KhachThue?.TenKhach
+
+                        </td>
+
+                        <td class="text-center">
+                            @item.NgayTao.ToString("dd/MM/yyyy")
+                        </td>
+
+                        <td class="text-end text-danger fw-bold">
+
+                            @item.TongTien.ToString("N0",
+                                     new System.Globalization.CultureInfo("vi-VN")) đ
+
+                        </td>
+
+                        <td class="text-center">
+
+                            @if (item.TrangThai == "Đã thanh toán")
+                            {
+                                <span class="badge bg-success">
+                                    Đã thanh toán
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Chưa thanh toán
+                                </span>
+                            }
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+
+                                
+                                <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-info btn-sm">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+                                
+                                <a asp-action="ExportPdf"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-danger btn-sm">
+
+                                    <i class="bi bi-file-earmark-pdf"></i>
+
+                                </a>
+
+                                
+                                @if (User.IsInRole("khachthue"))
+                                {
+                                    @if (item.TrangThai != "Đã thanh toán")
+                                    {
+                                        <form asp-action="ConfirmPayment"
+                                              asp-route-id="@item.Id"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-success btn-sm">
+
+                                                <i class="bi bi-credit-card"></i>
+
+                                            </button>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary btn-sm"
+                                                disabled>
+
+                                            <i class="bi bi-check-circle"></i>
+
+                                        </button>
+                                    }
+                                }
+
+                               
+                                <a asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-outline-danger btn-sm">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: '@Html.Raw(TempData["Success"])',
+            timer: 2000,
+            showConfirmButton: false
+            });
+        </script>
+    }
+
+}

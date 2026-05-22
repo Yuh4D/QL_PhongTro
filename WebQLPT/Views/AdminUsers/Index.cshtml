@@ -2,91 +2,383 @@
 
 @{
     ViewData["Title"] = "Quản lý tài khoản";
+    Layout = "_LayoutAdmin";
+
+    var totalUsers = Model.Count();
+    var approvedUsers = Model.Count(x => x.IsApproved);
+    var pendingUsers = Model.Count(x => !x.IsApproved);
 }
 
-<h2>Quản lý tài khoản</h2>
+<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
 
+    <div>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-shield-lock-fill me-2"></i>
+            Quản lý tài khoản
+        </h2>
+
+        <p class="text-muted mb-0">
+            Quản lý và phân quyền người dùng trong hệ thống
+        </p>
+    </div>
+
+</div>
+
+<!-- STATISTICS -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <p class="text-muted mb-1">
+                            Tổng tài khoản
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            @totalUsers
+                        </h3>
+                    </div>
+
+                    <div class="fs-1 text-primary">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <p class="text-muted mb-1">
+                            Đã duyệt
+                        </p>
+
+                        <h3 class="fw-bold text-success mb-0">
+                            @approvedUsers
+                        </h3>
+                    </div>
+
+                    <div class="fs-1 text-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <p class="text-muted mb-1">
+                            Chưa duyệt
+                        </p>
+
+                        <h3 class="fw-bold text-warning mb-0">
+                            @pendingUsers
+                        </h3>
+                    </div>
+
+                    <div class="fs-1 text-warning">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- SEARCH -->
+<form method="get"
+      asp-action="Index"
+      class="row g-2 mb-4">
+
+    <div class="col-md-4">
+
+        <input type="text"
+               name="keyword"
+               value="@Context.Request.Query["keyword"]"
+               class="form-control"
+               placeholder="Tìm tài khoản..." />
+
+    </div>
+
+    <div class="col-auto">
+
+        <button type="submit"
+                class="btn btn-primary">
+
+            <i class="bi bi-search"></i>
+            Tìm kiếm
+
+        </button>
+
+    </div>
+
+</form>
+
+<!-- ALERT -->
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger shadow-sm rounded-3">
+
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
         @TempData["Error"]
+
     </div>
 }
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Approved</th>
-            <th>Liên kết</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+<!-- TABLE -->
+<div class="card border-0 shadow-sm rounded-4">
 
-    <tbody>
-        @foreach (var item in Model)
+    <div class="card-body">
+
+        @if (Model.Any())
         {
-            <tr>
-                <td>@item.Username</td>
+            <table class="table table-hover align-middle">
 
-                <td>@item.Role</td>
+                <thead class="table-dark">
 
-                <td>
-                    @if (item.IsApproved)
-                    {
-                        <span class="text-success">
-                            Đã duyệt
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="text-danger">
-                            Chưa duyệt
-                        </span>
-                    }
-                </td>
+                    <tr>
+                        <th>Tài khoản</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Liên kết</th>
+                        <th width="180">Thao tác</th>
+                    </tr>
 
-                <td>
-                    @if (item.Role == "chutro")
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
                     {
-                        <span>
-                            Chủ trọ:
-                            @item.ChuTro?.TenChuTro
-                        </span>
+                        <tr>
+
+                            <!-- USERNAME -->
+                            <td>
+
+                                <div class="fw-semibold">
+                                    @item.Username
+                                </div>
+
+                            </td>
+
+                            <!-- ROLE -->
+                            <td>
+
+                                @if (item.Role == "admin")
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-shield-fill-check me-1"></i>
+                                        Admin
+                                    </span>
+                                }
+                                else if (item.Role == "chutro")
+                                {
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-house-fill me-1"></i>
+                                        Chủ trọ
+                                    </span>
+                                }
+                                else if (item.Role == "khachthue")
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-person-fill me-1"></i>
+                                        Khách thuê
+                                    </span>
+                                }
+
+                            </td>
+
+                            <!-- STATUS -->
+                            <td>
+
+                                @if (item.IsApproved)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Đã duyệt
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-clock-history me-1"></i>
+                                        Chưa duyệt
+                                    </span>
+                                }
+
+                            </td>
+
+                            <!-- LINK -->
+                            <td>
+
+                                @if (item.Role == "chutro")
+                                {
+                                    <span>
+                                        <i class="bi bi-house-door-fill me-1 text-primary"></i>
+                                        @item.ChuTro?.TenChuTro
+                                    </span>
+                                }
+
+                                @if (item.Role == "khachthue")
+                                {
+                                    <span>
+                                        <i class="bi bi-person-badge-fill me-1 text-success"></i>
+                                        @item.KhachThue?.TenKhach
+                                    </span>
+                                }
+
+                                @if (item.Role == "admin")
+                                {
+                                    <span class="text-muted">
+                                        <i class="bi bi-gear-fill me-1"></i>
+                                        Hệ thống
+                                    </span>
+                                }
+
+                            </td>
+
+                            <!-- ACTION -->
+                            <td>
+
+                                <div class="d-flex gap-2">
+
+                                    @if (!item.IsApproved)
+                                    {
+                                        <form asp-action="Approve"
+                                              asp-route-id="@item.Id"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-success btn-sm">
+
+                                                <i class="bi bi-check-circle"></i>
+
+                                            </button>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        @if (item.Role != "admin")
+                                        {
+                                            <form asp-action="Lock"
+                                                  asp-route-id="@item.Id"
+                                                  method="post"
+                                                  onsubmit="return confirm('Bạn có chắc muốn khóa tài khoản này?')">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-danger btn-sm">
+
+                                                    <i class="bi bi-lock-fill"></i>
+
+                                                </button>
+
+                                            </form>
+                                        }
+                                    }
+
+                                </div>
+
+                            </td>
+
+                        </tr>
                     }
 
-                    @if (item.Role == "khachthue")
-                    {
-                        <span>
-                            Khách thuê:
-                            @item.KhachThue?.TenKhach
-                        </span>
-                    }
-                </td>
+                </tbody>
 
-                <td>
-                    @if (!item.IsApproved)
-                    {
-                        <a asp-action="Approve"
-                               asp-route-id="@item.Id"
-                               class="btn btn-success btn-sm">
-                            Duyệt
-                        </a>
-                    }
-                    else
-                    {
-                        @if (item.Role != "admin")
-                        {
-                            <a asp-action="Lock"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-danger btn-sm">
-                                Khóa
-                            </a>
-                        }
-                    }
-                </td>
-            </tr>
+            </table>
         }
-    </tbody>
-</table>
+        else
+        {
+            <!-- EMPTY STATE -->
+
+            <div class="text-center py-5">
+
+                <div class="display-1 text-muted mb-3">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <h5 class="fw-bold">
+                    Không tìm thấy tài khoản
+                </h5>
+
+                <p class="text-muted">
+                    Hãy thử tìm kiếm với từ khóa khác
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: '@TempData["Success"]',
+            timer: 2000,
+            showConfirmButton: false
+            });
+        </script>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: '@TempData["Error"]'
+            });
+        </script>
+    }
+
+}

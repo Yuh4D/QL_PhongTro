@@ -1,60 +1,174 @@
 ﻿@model WebQLPT.Models.DangTin
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết phòng trọ";
 }
 
-<h1>Details</h1>
+<section class="py-5 bg-light">
 
-<div>
-    <h4>DangTin</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TieuDe)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TieuDe)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NoiDung)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NoiDung)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gia)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gia)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HinhAnh)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HinhAnh)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NgayDang)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NgayDang)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhongTro)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhongTro.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ChuTro)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ChuTro.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="container">
+
+        <div class="row g-4">
+
+            <!-- IMAGE -->
+            <div class="col-lg-7">
+
+                <div class="bg-white rounded-4 shadow-sm overflow-hidden">
+
+                    @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                    {
+                        <img src="@Model.HinhAnh"
+                             class="w-100"
+                             style="height:500px; object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <img src="https://via.placeholder.com/1000x700"
+                             class="w-100"
+                             style="height:500px; object-fit:cover;" />
+                    }
+
+                </div>
+
+            </div>
+
+            <!-- INFO -->
+            <div class="col-lg-5">
+
+                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+
+                    <!-- TITLE -->
+                    <h2 class="fw-bold mb-3">
+                        @Model.TieuDe
+                    </h2>
+
+                    <!-- PRICE -->
+                    <div class="mb-3">
+
+                        <span class="badge bg-success fs-5 px-3 py-2">
+
+                            @Model.Gia.ToString("N0",
+                                     new System.Globalization.CultureInfo("vi-VN")) đ
+
+                        </span>
+
+                    </div>
+
+                    <!-- STATUS -->
+                    <div class="mb-4">
+
+                        @if (Model.PhongTro?.TrangThai == "Trống")
+                        {
+                            <span class="badge bg-success">
+                                Còn phòng
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Đã thuê
+                            </span>
+                        }
+
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="mb-4">
+
+                        <h5 class="fw-bold">
+                            Mô tả
+                        </h5>
+
+                        <p class="text-muted">
+                            @Model.NoiDung
+                        </p>
+
+                    </div>
+
+                    <hr />
+
+                    <!-- ROOM INFO -->
+                    <div class="mb-4">
+
+                        <h5 class="fw-bold mb-3">
+                            Thông tin phòng
+                        </h5>
+
+                        <div class="mb-2">
+                            <i class="bi bi-house-door me-2"></i>
+                            <strong>Phòng:</strong>
+                            @Model.PhongTro?.TenPhong
+                        </div>
+
+                        @if (Model.PhongTro != null)
+                        {
+                            <div class="mb-2">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <strong>Trạng thái:</strong>
+                                @Model.PhongTro.TrangThai
+                            </div>
+                        }
+
+                    </div>
+
+                    <hr />
+
+                    <!-- LANDLORD -->
+                    <div class="mb-4">
+
+                        <h5 class="fw-bold mb-3">
+                            Thông tin chủ trọ
+                        </h5>
+
+                        <div class="mb-2">
+                            <i class="bi bi-person me-2"></i>
+                            @Model.ChuTro?.TenChuTro
+                        </div>
+
+                        <div class="mb-2">
+                            <i class="bi bi-telephone me-2"></i>
+                            @Model.ChuTro?.SoDienThoai
+                        </div>
+
+                        <div class="mb-2">
+                            <i class="bi bi-envelope me-2"></i>
+                            @Model.ChuTro?.Email
+                        </div>
+
+                    </div>
+
+                    <!-- ACTION -->
+                    <div class="d-flex gap-2">
+
+                        <a asp-action="Index"
+                               class="btn btn-outline-dark flex-fill">
+
+                            Quay lại
+
+                        </a>
+
+                        @if (User.Identity != null &&
+                                                     User.Identity.IsAuthenticated &&
+                                                     (User.IsInRole("admin") ||
+                                                      User.IsInRole("chutro")))
+                        {
+                            <a asp-action="Edit"
+                                   asp-route-id="@Model.Id"
+                                   class="btn btn-dark flex-fill">
+
+                                Chỉnh sửa
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

@@ -1,61 +1,198 @@
 ﻿@model WebQLPT.ViewModels.RegisterViewModel
 
-<h2>Đăng ký chủ trọ</h2>
-
-<form asp-action="Register" method="post">
-
-    <div asp-validation-summary="All" style="color:red"></div>
-
-    <div>
-        <label asp-for="Username"></label>
-        <input asp-for="Username" />
-    </div>
-
-    <div>
-        <label asp-for="Password"></label>
-        <input asp-for="Password" />
-    </div>
-
-    <div>
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" />
-    </div>
-
-    <div>
-        <label asp-for="TenChuTro"></label>
-        <input asp-for="TenChuTro" />
-    </div>
-
-    <div>
-        <label asp-for="SoDienThoai"></label>
-        <input asp-for="SoDienThoai" />
-    </div>
-
-    <div>
-        <label asp-for="Email"></label>
-        <input asp-for="Email" />
-    </div>
-
-    <div>
-        <label asp-for="DiaChi"></label>
-        <input asp-for="DiaChi" />
-    </div>
-
-    <button type="submit">
-        Đăng ký
-    </button>
-
-</form>
-
-@if (TempData["Success"] != null)
-{
-    <p style="color:green">
-        @TempData["Success"]
-    </p>
+@{
+    ViewData["Title"] = "Đăng ký chủ trọ";
 }
 
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card shadow border-0 rounded-4">
+
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+
+                        <h2 class="fw-bold">
+                            Đăng ký chủ trọ
+                        </h2>
+
+                        <p class="text-muted">
+                            Tạo tài khoản để quản lý phòng trọ
+                        </p>
+
+                    </div>
+
+                    <form asp-action="Register" method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="alert alert-danger">
+                        </div>
+
+                        <div class="row">
+
+                            <!-- USERNAME -->
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="Username"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="Username"
+                                       class="form-control form-control-lg" />
+
+                                <span asp-validation-for="Username"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <!-- PHONE -->
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="SoDienThoai"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="SoDienThoai"
+                                       class="form-control form-control-lg" />
+
+                                <span asp-validation-for="SoDienThoai"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <!-- PASSWORD -->
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="Password"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="Password"
+                                       type="password"
+                                       class="form-control form-control-lg" />
+
+                                <span asp-validation-for="Password"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <!-- CONFIRM PASSWORD -->
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="ConfirmPassword"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="ConfirmPassword"
+                                       type="password"
+                                       class="form-control form-control-lg" />
+
+                                <span asp-validation-for="ConfirmPassword"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <!-- TEN CHU TRO -->
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="TenChuTro"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="TenChuTro"
+                                       class="form-control form-control-lg" />
+
+                                <span asp-validation-for="TenChuTro"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <!-- EMAIL -->
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="Email"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="Email"
+                                       class="form-control form-control-lg" />
+
+                                <span asp-validation-for="Email"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <!-- ADDRESS -->
+                            <div class="col-12 mb-4">
+
+                                <label asp-for="DiaChi"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="DiaChi"
+                                       class="form-control form-control-lg" />
+
+                                <span asp-validation-for="DiaChi"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-dark btn-lg w-100">
+
+                            Đăng ký
+
+                        </button>
+
+                    </form>
+
+                    <hr class="my-4" />
+
+                    <div class="text-center">
+
+                        <span class="text-muted">
+                            Đã có tài khoản?
+                        </span>
+
+                        <a asp-controller="Account"
+                               asp-action="Login"
+                               class="fw-bold text-decoration-none">
+
+                            Đăng nhập
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 @section Scripts {
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
 }

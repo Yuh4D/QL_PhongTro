@@ -1,76 +1,341 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
+    Layout = "_LayoutAdmin";
 }
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12 d-flex align-items-center justify-content-between">
-            <h2 class="mb-0">Bảng điều khiển</h2>
-            <small class="text-muted">Tổng quan hệ thống quản lý phòng trọ</small>
-        </div>
-    </div>
-   
-    <div class="row dashboard-cards g-3">
-        <div class="col-sm-6 col-md-4 col-lg-3"> 
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 display-6 text-primary"><i class="bi bi-people-fill"></i></div>
-                    <div>
-                        <div class="text-muted small">Khách thuê</div>
-                        <div class="h4 mb-0">@ViewBag.SoKhach</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 display-6 text-success"><i class="bi bi-building"></i></div>
-                    <div>
-                        <div class="text-muted small">Phòng trọ</div>
-                        <div class="h4 mb-0">@ViewBag.SoPhong</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 display-6 text-warning"><i class="bi bi-receipt"></i></div>
-                    <div>
-                        <div class="text-muted small">Hóa đơn</div>
-                        <div class="h4 mb-0">0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 display-6 text-danger"><i class="bi bi-chat-left-text"></i></div>
-                    <div>
-                        <div class="text-muted small">Đánh giá</div>
-                        <div class="h4 mb-0">0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-speedometer2 me-2"></i>
+            Dashboard
+        </h2>
+
+        <p class="text-muted mb-0">
+            Tổng quan hệ thống quản lý phòng trọ
+        </p>
+
     </div>
 
-    <div class="row mt-4">
-        <div class="col-lg-8">
-            <div class="card p-3">
-                <h5>Báo cáo gần đây</h5>
-                <p class="text-muted">Hiển thị các hoạt động và thông báo hệ thống ở đây.</p>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="card p-3">
-                <h5>Thông báo</h5>
-                <ul class="list-unstyled mb-0">
-                    <li class="py-2 border-bottom">Không có thông báo mới</li>
-                </ul>
-            </div>
-        </div>
+    <div>
+
+        <span class="badge bg-dark fs-6 px-3 py-2">
+            @DateTime.Now.ToString("dd/MM/yyyy")
+        </span>
+
     </div>
+
+</div>
+
+<!-- WELCOME -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+
+    <div class="card-body p-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-8">
+
+                <h3 class="fw-bold mb-2">
+                    Xin chào @User.Identity?.Name 👋
+                </h3>
+
+                <p class="text-muted mb-0">
+                    Chúc bạn có một ngày làm việc hiệu quả với hệ thống WebQLPT.
+                </p>
+
+            </div>
+
+            <div class="col-lg-4 text-end d-none d-lg-block">
+
+                <i class="bi bi-buildings display-1 text-primary opacity-50"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- STATISTICS -->
+<div class="row g-4 mb-4">
+
+    <!-- KHÁCH THUÊ -->
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Khách thuê
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            @ViewBag.SoKhach
+                        </h3>
+
+                    </div>
+
+                    <div class="display-5 text-primary">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PHÒNG TRỌ -->
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Phòng trọ
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            @ViewBag.SoPhong
+                        </h3>
+
+                    </div>
+
+                    <div class="display-5 text-success">
+                        <i class="bi bi-building"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- HÓA ĐƠN -->
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Hóa đơn
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            @ViewBag.SoHoaDon
+                        </h3>
+
+                    </div>
+
+                    <div class="display-5 text-warning">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CHỦ TRỌ -->
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Chủ trọ
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            @ViewBag.SoChuTro
+                        </h3>
+
+                    </div>
+
+                    <div class="display-5 text-danger">
+                        <i class="bi bi-house-fill"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- QUICK STATS -->
+<div class="row g-4 mb-4">
+
+    <div class="col-lg-4">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-door-open me-2"></i>
+                    Trạng thái phòng
+                </h5>
+
+                <div class="mb-3">
+
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Phòng trống</span>
+                        <span class="fw-bold text-success">
+                            @ViewBag.PhongTrong
+                        </span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar bg-success"
+                             style="width: 70%">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Đã thuê</span>
+                        <span class="fw-bold text-primary">
+                            @ViewBag.PhongDaThue
+                        </span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar bg-primary"
+                             style="width: 60%">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- QUICK ACTION -->
+    <div class="col-lg-4">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-lightning-fill me-2"></i>
+                    Thao tác nhanh
+                </h5>
+
+                <div class="d-grid gap-2">
+
+                    <a asp-controller="PhongTroes"
+                           asp-action="Create"
+                           class="btn btn-primary">
+
+                        <i class="bi bi-building-add me-2"></i>
+                        Thêm phòng trọ
+
+                    </a>
+
+                    <a asp-controller="KhachThues"
+                           asp-action="Create"
+                           class="btn btn-success">
+
+                        <i class="bi bi-person-plus-fill me-2"></i>
+                        Thêm khách thuê
+
+                    </a>
+
+                    <a asp-controller="HoaDons"
+                           asp-action="Create"
+                           class="btn btn-warning text-dark">
+
+                        <i class="bi bi-receipt-cutoff me-2"></i>
+                        Tạo hóa đơn
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- THÔNG BÁO -->
+    <div class="col-lg-4">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body">
+
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-bell-fill me-2"></i>
+                    Thông báo
+                </h5>
+
+                <ul class="list-group list-group-flush">
+
+                    <li class="list-group-item px-0">
+                        Có
+                        <span class="fw-bold text-danger">
+                            @ViewBag.HoaDonChuaThanhToan
+                        </span>
+                        hóa đơn chưa thanh toán
+                    </li>
+
+                    <li class="list-group-item px-0">
+                        Hệ thống đang hoạt động ổn định
+                    </li>
+
+                    <li class="list-group-item px-0">
+                        Chào mừng bạn quay lại 🎉
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>

@@ -6,13 +6,13 @@ public class User
     public int Id { get; set; }
 
     [Required]
-    public string Username { get; set; }
+    public string? Username { get; set; }
 
     [Required]
-    public string PasswordHash { get; set; }
+    public string? PasswordHash { get; set; }
 
     [Required]
-    public string Role { get; set; }
+    public string? Role { get; set; }
 
     public bool IsApproved { get; set; } = false;
 

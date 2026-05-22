@@ -480,5 +480,48 @@ namespace WebQLPT.Controllers
 
             return View(hoaDons);
         }
+
+        // GET: HoaDons/Payment/5
+        public async Task<IActionResult> Payment(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var hoaDon = await _context.HoaDons
+                .Include(h => h.PhongTro)
+                .Include(h => h.KhachThue)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (hoaDon == null)
+            {
+                return NotFound();
+            }
+
+            return View(hoaDon);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmPayment(int id)
+        {
+            var hoaDon = await _context.HoaDons.FindAsync(id);
+
+            if (hoaDon == null)
+            {
+                return NotFound();
+            }
+
+            hoaDon.TrangThai = "Đã thanh toán";
+
+            _context.Update(hoaDon);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Thanh toán thành công";
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WebQLPT.Data;
 using WebQLPT.Models.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 
 namespace WebQLPT.Controllers
 {
@@ -18,10 +19,29 @@ namespace WebQLPT.Controllers
 
         public IActionResult Index()
         {
+            // THỐNG KÊ
             ViewBag.SoPhong = _context.PhongTros.Count();
+
             ViewBag.SoKhach = _context.KhachThues.Count();
 
-            //ViewBag.PhongTrong = _context.PhongTros.Count(p => p.TrangThai == "Trống");
+            ViewBag.SoHoaDon = _context.HoaDons.Count();
+
+            ViewBag.SoChuTro = _context.ChuTros.Count();
+
+            // PHÒNG TRỐNG
+            ViewBag.PhongTrong =
+                _context.PhongTros
+                    .Count(x => x.TrangThai == "Trống");
+
+            // PHÒNG ĐÃ THUÊ
+            ViewBag.PhongDaThue =
+                _context.PhongTros
+                    .Count(x => x.TrangThai == "Đã thuê");
+
+            // HÓA ĐƠN CHƯA THANH TOÁN
+            ViewBag.HoaDonChuaThanhToan =
+                _context.HoaDons
+                    .Count(x => x.TrangThai == "Chưa thanh toán");
 
             return View();
         }
@@ -31,10 +51,18 @@ namespace WebQLPT.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [ResponseCache(Duration = 0,
+            Location = ResponseCacheLocation.None,
+            NoStore = true)]
+
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId =
+                    Activity.Current?.Id ??
+                    HttpContext.TraceIdentifier
+            });
         }
     }
 }

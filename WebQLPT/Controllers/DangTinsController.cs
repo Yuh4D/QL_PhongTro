@@ -11,7 +11,7 @@ using WebQLPT.Models;
 
 namespace WebQLPT.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class DangTinsController : Controller
     {
         private readonly AppDbContext _context;

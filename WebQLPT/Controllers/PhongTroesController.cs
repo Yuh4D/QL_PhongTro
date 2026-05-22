@@ -124,7 +124,7 @@ namespace WebQLPT.Controllers
         [Authorize(Roles = "admin,chutro")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TenPhong,Gia,TrangThai,MoTa")] PhongTro phongTro)
+        public async Task<IActionResult> Create([Bind("Id,TenPhong,Gia,TrangThai,MoTa,ChuTroId")] PhongTro phongTro)
         {
             if (!ModelState.IsValid)
             {

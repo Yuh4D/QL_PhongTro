@@ -22,7 +22,8 @@ namespace WebQLPT.Models
         [Display(Name = "Mô tả")]
         public string? MoTa { get; set; }
 
-       
+        [Required(ErrorMessage = "Vui lòng chọn chủ trọ")]
+        [Display(Name = "Chủ trọ")]
         public int ChuTroId { get; set; }
 
         [ValidateNever]
