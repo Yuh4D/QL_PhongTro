@@ -24,13 +24,14 @@ namespace WebQLPT.Models
         [Display(Name = "Ngày đăng")]
         public DateTime NgayDang { get; set; } = DateTime.Now;
 
-
+        [Display(Name = "Tên phòng")]
         public int PhongTroId { get; set; }
 
         [ValidateNever]
         [Display(Name = "Phòng trọ")]
         public PhongTro PhongTro { get; set; }
 
+        [Display(Name = "Chủ trọ")]
         public int ChuTroId { get; set; }
 
         [ValidateNever]

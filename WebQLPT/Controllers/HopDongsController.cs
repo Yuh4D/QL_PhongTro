@@ -27,15 +27,51 @@ namespace WebQLPT.Controllers
         }
 
         // GET: HopDongs
+
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.HopDongs
+            var query = _context.HopDongs
                 .Include(h => h.KhachThue)
-                .Include(h => h.PhongTro);
-            return View(await appDbContext.ToListAsync());
+                .Include(h => h.PhongTro)
+                    .ThenInclude(p => p.ChuTro)
+                .AsQueryable();
+
+            // ADMIN
+            if (User.IsInRole("admin"))
+            {
+                return View(await query.ToListAsync());
+            }
+
+            // CHỦ TRỌ
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId =
+                    UserHelper.GetChuTroId(User);
+
+                query = query.Where(h =>
+                    h.PhongTro != null &&
+                    h.PhongTro.ChuTroId == chuTroId);
+
+                return View(await query.ToListAsync());
+            }
+
+            // KHÁCH THUÊ
+            if (User.IsInRole("khachthue"))
+            {
+                var khachId =
+                    UserHelper.GetKhachThueId(User);
+
+                query = query.Where(h =>
+                    h.KhachThueId == khachId);
+
+                return View(await query.ToListAsync());
+            }
+
+            return Forbid();
         }
 
         // GET: HopDongs/Details/5
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,16 +82,57 @@ namespace WebQLPT.Controllers
             var hopDong = await _context.HopDongs
                 .Include(h => h.KhachThue)
                 .Include(h => h.PhongTro)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(h => h.Id == id);
+
             if (hopDong == null)
             {
                 return NotFound();
             }
 
-            return View(hopDong);
+            // ADMIN
+            if (User.IsInRole("admin"))
+            {
+                return View(hopDong);
+            }
+
+            // CHỦ TRỌ
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId =
+                    UserHelper.GetChuTroId(User);
+
+                var isOwner = await _context.PhongTros
+                    .AnyAsync(p =>
+                        p.Id == hopDong.PhongTroId &&
+                        p.ChuTroId == chuTroId);
+
+                if (!isOwner)
+                {
+                    return Forbid();
+                }
+
+                return View(hopDong);
+            }
+
+            // KHÁCH THUÊ
+            if (User.IsInRole("khachthue"))
+            {
+                var khachId =
+                    UserHelper.GetKhachThueId(User);
+
+                if (hopDong.KhachThueId != khachId)
+                {
+                    return Forbid();
+                }
+
+                return View(hopDong);
+            }
+
+            return Forbid();
         }
 
         // GET: HopDongs/Create
+        [Authorize(Roles = "admin,chutro")]
         public IActionResult Create()
         {
             ViewData["KhachThueId"] = new SelectList(_context.KhachThues, "Id", "TenKhach");
@@ -66,9 +143,10 @@ namespace WebQLPT.Controllers
         // POST: HopDongs/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "admin,chutro")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,PhongTroId,KhachThueId,NgayBatDau,NgayKetThuc,TienCoc,NoiDung")] HopDong hopDong)
+        public async Task<IActionResult> Create([Bind("Id,PhongTroId,KhachThueId,NgayBatDau,NgayKetThuc,TienCoc,DieuKhoanThem")] HopDong hopDong)
         {
             if (!ModelState.IsValid)
             {
@@ -111,6 +189,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: HopDongs/Edit/5
+        [Authorize(Roles = "admin,chutro")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -118,30 +197,82 @@ namespace WebQLPT.Controllers
                 return NotFound();
             }
 
-            var hopDong = await _context.HopDongs.FindAsync(id);
+            var hopDong = await _context.HopDongs
+                .Include(h => h.PhongTro)
+                .FirstOrDefaultAsync(h => h.Id == id);
+
             if (hopDong == null)
             {
                 return NotFound();
             }
-            ViewData["KhachThueId"] = new SelectList(_context.KhachThues, "Id", "TenKhach", hopDong.KhachThueId);
-            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "TenPhong", hopDong.PhongTroId);
+
+           
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (hopDong.PhongTro.ChuTroId != chuTroId)
+                {
+                    return Forbid();
+                }
+            }
+
+            ViewData["KhachThueId"] =
+                new SelectList(_context.KhachThues,
+                    "Id",
+                    "TenKhach",
+                    hopDong.KhachThueId);
+
+            ViewData["PhongTroId"] =
+                new SelectList(_context.PhongTros,
+                    "Id",
+                    "TenPhong",
+                    hopDong.PhongTroId);
+
             return View(hopDong);
         }
 
         // POST: HopDongs/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "admin,chutro")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,PhongTroId,KhachThueId,NgayBatDau,NgayKetThuc,TienCoc,NoiDung")] HopDong hopDong)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,PhongTroId,KhachThueId,NgayBatDau,NgayKetThuc,TienCoc,DieuKhoanThem")]
+    HopDong hopDong)
         {
-            if (id != hopDong.Id) return NotFound();
+            if (id != hopDong.Id)
+            {
+                return NotFound();
+            }
+
+           
+            var oldHopDong = await _context.HopDongs
+                .Include(h => h.PhongTro)
+                .FirstOrDefaultAsync(h => h.Id == id);
+
+            if (oldHopDong == null)
+            {
+                return NotFound();
+            }
+
+         
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (oldHopDong.PhongTro.ChuTroId != chuTroId)
+                {
+                    return Forbid();
+                }
+            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-             
                     var phong = await _context.PhongTros
                         .Include(p => p.ChuTro)
                         .FirstOrDefaultAsync(p => p.Id == hopDong.PhongTroId);
@@ -151,26 +282,47 @@ namespace WebQLPT.Controllers
 
                     var chuTro = phong.ChuTro;
 
-                    hopDong.NoiDung = _service.GenerateHopDong(hopDong, phong, khach, chuTro);
+                    hopDong.NoiDung =
+                        _service.GenerateHopDong(
+                            hopDong,
+                            phong,
+                            khach,
+                            chuTro);
 
                     _context.Update(hopDong);
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!HopDongExists(hopDong.Id)) return NotFound();
-                    else throw;
+                    if (!HopDongExists(hopDong.Id))
+                    {
+                        return NotFound();
+                    }
+
+                    throw;
                 }
 
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["KhachThueId"] = new SelectList(_context.KhachThues, "Id", "TenKhach", hopDong.KhachThueId);
-            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "TenPhong", hopDong.PhongTroId);
+            ViewData["KhachThueId"] =
+                new SelectList(_context.KhachThues,
+                    "Id",
+                    "TenKhach",
+                    hopDong.KhachThueId);
+
+            ViewData["PhongTroId"] =
+                new SelectList(_context.PhongTros,
+                    "Id",
+                    "TenPhong",
+                    hopDong.PhongTroId);
+
             return View(hopDong);
         }
 
         // GET: HopDongs/Delete/5
+        [Authorize(Roles = "admin,chutro")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -182,26 +334,56 @@ namespace WebQLPT.Controllers
                 .Include(h => h.KhachThue)
                 .Include(h => h.PhongTro)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (hopDong == null)
             {
                 return NotFound();
+            }
+
+            // CHỦ TRỌ chỉ được xóa hợp đồng của mình
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (hopDong.PhongTro.ChuTroId != chuTroId)
+                {
+                    return Forbid();
+                }
             }
 
             return View(hopDong);
         }
 
         // POST: HopDongs/Delete/5
+        [Authorize(Roles = "admin,chutro")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var hopDong = await _context.HopDongs.FindAsync(id);
-            if (hopDong != null)
+            var hopDong = await _context.HopDongs
+                .Include(h => h.PhongTro)
+                .FirstOrDefaultAsync(h => h.Id == id);
+
+            if (hopDong == null)
             {
-                _context.HopDongs.Remove(hopDong);
+                return NotFound();
             }
 
+            // CHỦ TRỌ chỉ được xóa hợp đồng của mình
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (hopDong.PhongTro.ChuTroId != chuTroId)
+                {
+                    return Forbid();
+                }
+            }
+
+            _context.HopDongs.Remove(hopDong);
+
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 

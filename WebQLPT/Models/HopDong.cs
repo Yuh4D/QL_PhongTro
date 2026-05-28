@@ -24,7 +24,11 @@ namespace WebQLPT.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal TienCoc { get; set; }
 
+        [Display(Name ="Nội dung")]
         public string? NoiDung { get; set; }
+
+        [Display(Name = "Điều khoản thêm")]
+        public string? DieuKhoanThem { get; set; }
 
         [ValidateNever]
         public PhongTro? PhongTro { get; set; }

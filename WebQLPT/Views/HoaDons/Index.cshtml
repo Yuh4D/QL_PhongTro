@@ -176,14 +176,16 @@
                                     }
                                 }
 
-                               
-                                <a asp-action="Delete"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-outline-danger btn-sm">
+                               @if(!User.IsInRole("khachthue"))
+                               {
+                                    <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-outline-danger btn-sm">
 
-                                    <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash"></i>
 
-                                </a>
+                                    </a>
+                               }
 
                             </div>
 

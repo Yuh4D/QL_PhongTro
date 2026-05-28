@@ -502,6 +502,7 @@ namespace WebQLPT.Controllers
             return View(hoaDon);
         }
 
+        [Authorize(Roles = "khachthue")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmPayment(int id)
@@ -513,6 +514,13 @@ namespace WebQLPT.Controllers
                 return NotFound();
             }
 
+            var khachThueId = UserHelper.GetKhachThueId(User);
+
+            if (hoaDon.KhachThueId != khachThueId)
+            {
+                return Forbid();
+            }
+
             hoaDon.TrangThai = "Đã thanh toán";
 
             _context.Update(hoaDon);
@@ -521,7 +529,7 @@ namespace WebQLPT.Controllers
 
             TempData["Success"] = "Thanh toán thành công";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyBills));
         }
     }
 }

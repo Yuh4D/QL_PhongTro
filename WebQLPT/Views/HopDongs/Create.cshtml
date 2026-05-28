@@ -1,51 +1,154 @@
 ﻿@model WebQLPT.Models.HopDong
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Tạo hợp đồng";
+    Layout = "_LayoutAdmin";
 }
 
-<h1>Create</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<h4>HopDong</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PhongTroId" class="control-label"></label>
-                <select asp-for="PhongTroId" class ="form-control" asp-items="ViewBag.PhongTroId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="KhachThueId" class="control-label"></label>
-                <select asp-for="KhachThueId" class ="form-control" asp-items="ViewBag.KhachThueId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="NgayBatDau" class="control-label"></label>
-                <input asp-for="NgayBatDau" type="date" class="form-control" />
-                <span asp-validation-for="NgayBatDau" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NgayKetThuc" class="control-label"></label>
-                <input asp-for="NgayKetThuc" type="date" class="form-control" />
-                <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TienCoc" class="control-label"></label>
-                <input asp-for="TienCoc" class="form-control" />
-                <span asp-validation-for="TienCoc" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    
+    <div>
+        <h2 class="fw-bold mb-1">
+            📝 Tạo hợp đồng thuê phòng
+        </h2>
+
+        <p class="text-muted mb-0">
+            Nhập thông tin để tạo hợp đồng mới
+        </p>
     </div>
+
+    <a asp-action="Index"
+           class="btn btn-outline-secondary">
+
+        ← Quay lại
+
+    </a>
+    
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="card shadow border-0 rounded-4">
+
+    
+    <div class="card-body p-4">
+
+        <form asp-action="Create" method="post">
+
+            <div asp-validation-summary="All"
+                 class="alert alert-danger">
+            </div>
+
+            <div class="row g-3">
+
+                <!-- PHÒNG -->
+                <div class="col-md-6">
+
+                    <label asp-for="PhongTroId"
+                           class="form-label fw-semibold">
+                    </label>
+
+                    <select asp-for="PhongTroId"
+                            class="form-select"
+                            asp-items="ViewBag.PhongTroId">
+                    </select>
+
+                </div>
+
+                <!-- KHÁCH -->
+                <div class="col-md-6">
+
+                    <label asp-for="KhachThueId"
+                           class="form-label fw-semibold">
+                    </label>
+
+                    <select asp-for="KhachThueId"
+                            class="form-select"
+                            asp-items="ViewBag.KhachThueId">
+                    </select>
+
+                </div>
+
+                <!-- NGÀY BẮT ĐẦU -->
+                <div class="col-md-6">
+
+                    <label asp-for="NgayBatDau"
+                           class="form-label fw-semibold">
+                    </label>
+
+                    <input asp-for="NgayBatDau"
+                           type="date"
+                           class="form-control" />
+
+                    <span asp-validation-for="NgayBatDau"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+                <!-- NGÀY KẾT THÚC -->
+                <div class="col-md-6">
+
+                    <label asp-for="NgayKetThuc"
+                           class="form-label fw-semibold">
+                    </label>
+
+                    <input asp-for="NgayKetThuc"
+                           type="date"
+                           class="form-control" />
+
+                    <span asp-validation-for="NgayKetThuc"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+                <!-- TIỀN CỌC -->
+                <div class="col-md-6">
+
+                    <label asp-for="TienCoc"
+                           class="form-label fw-semibold">
+                    </label>
+
+                    <input asp-for="TienCoc"
+                           class="form-control"
+                           placeholder="VD: 1000000" />
+
+                    <span asp-validation-for="TienCoc"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    💾 Tạo hợp đồng
+
+                </button>
+
+                <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+
+                    Hủy
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+    
+
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

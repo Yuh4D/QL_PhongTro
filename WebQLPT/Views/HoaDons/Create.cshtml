@@ -1,128 +1,389 @@
 ﻿@model WebQLPT.Models.HoaDon
 
-<h2 class="mb-4">🧾 Tạo hóa đơn</h2>
+@{
+    ViewData["Title"] = "Tạo hóa đơn";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-receipt-cutoff me-2"></i>
+            Tạo hóa đơn
+        </h2>
+
+        <p class="text-muted mb-0">
+            Tạo và quản lý chi tiết hóa đơn phòng trọ
+        </p>
+    </div>
+
+</div>
 
 <form asp-action="Create" method="post">
 
-    <div class="row">
-        <div class="col-md-4">
-            <label>Phòng</label>
-            <select asp-for="PhongTroId" class="form-control" asp-items="ViewBag.PhongTroId"></select>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-semibold">
+                        Phòng trọ
+                    </label>
+
+                    <select asp-for="PhongTroId"
+                            class="form-select"
+                            asp-items="ViewBag.PhongTroId">
+                    </select>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label asp-for="NgayTao"
+                           class="form-label fw-semibold">
+                    </label>
+
+                    <input asp-for="NgayTao"
+                           type="date"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label asp-for="HanThanhToan"
+                           class="form-label fw-semibold">
+                    </label>
+
+                    <input asp-for="HanThanhToan"
+                           type="date"
+                           class="form-control" />
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="col-md-4">
-            <label>Ngày tạo</label>
-            <input asp-for="NgayTao" type="date" class="form-control" />
-        </div>
-
-        <div class="col-md-4">
-            <label>Hạn thanh toán</label>
-            <input asp-for="HanThanhToan" type="date" class="form-control" />
-        </div>
     </div>
 
-    <hr />
+    <div class="card border-0 shadow-sm rounded-4">
 
-    <h4>Chi tiết hóa đơn</h4>
+        <div class="card-body">
 
-    <table class="table table-bordered table-hover" id="detailTable">
-        <thead class="table-dark">
-            <tr>
-                <th>Nội dung</th>
-                <th>Đơn giá</th>
-                <th>Số lượng</th>
-                <th>Hệ số</th>
-                <th>Thành tiền</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+            <div class="d-flex justify-content-between align-items-center mb-3">
 
-    <h4 class="text-end">Tổng tiền: <span id="tongTien">0</span> VNĐ</h4>
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-list-check me-2"></i>
+                    Chi tiết hóa đơn
+                </h5>
 
-    <button type="button" class="btn btn-success" onclick="addRow()">+ Thêm dòng</button>
-    <button type="button" class="btn btn-warning" onclick="themDien()">+ Tiền điện</button>
-    <button type="button" class="btn btn-info" onclick="themNuoc()">+ Tiền nước</button>
+                <div class="d-flex gap-2">
 
-    <br /><br />
+                    <button type="button"
+                            class="btn btn-success"
+                            onclick="addRow()">
 
-    <button type="submit" class="btn btn-primary">Tạo hóa đơn</button>
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Thêm dòng
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-warning"
+                            onclick="themDien()">
+
+                        <i class="bi bi-lightning-charge me-1"></i>
+                        Tiền điện
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-info text-white"
+                            onclick="themNuoc()">
+
+                        <i class="bi bi-droplet me-1"></i>
+                        Tiền nước
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle"
+                       id="detailTable">
+
+                    <thead class="table-dark">
+
+                        <tr>
+                            <th>Nội dung</th>
+                            <th width="150">Đơn giá</th>
+                            <th width="120">Số lượng</th>
+                            <th width="120">Hệ số</th>
+                            <th width="180">Thành tiền</th>
+                            <th width="80"></th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+            </div>
+
+            <div class="text-end mt-4">
+
+                <h4 class="fw-bold">
+
+                    Tổng tiền:
+                    <span id="tongTien"
+                          class="text-danger">
+                        0
+                    </span>
+                    VNĐ
+
+                </h4>
+
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+
+                <button type="submit"
+                        class="btn btn-primary px-4">
+
+                    <i class="bi bi-save me-1"></i>
+                    Tạo hóa đơn
+
+                </button>
+
+                <a asp-action="Index"
+                       class="btn btn-secondary">
+
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Quay lại
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </form>
 
 @section Scripts {
+
     <script>
+
         let index = 0;
 
         function addRow() {
+
             let row = `
             <tr>
-                <td><input name="ChiTiets[${index}].NoiDung" class="form-control" /></td>
-                <td><input name="ChiTiets[${index}].DonGia" class="form-control" oninput="tinhTien(this)" /></td>
-                <td><input name="ChiTiets[${index}].SoLuong" class="form-control" oninput="tinhTien(this)" /></td>
-                <td><input name="ChiTiets[${index}].HeSo" value="1" class="form-control" oninput="tinhTien(this)" /></td>
-                <td class="thanhTien">0</td>
-                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button></td>
+
+                <td>
+                    <input name="ChiTiets[${index}].NoiDung"
+                           class="form-control"
+                           placeholder="Nhập nội dung..." />
+                </td>
+
+                <td>
+                    <input name="ChiTiets[${index}].DonGia"
+                           class="form-control"
+                           type="number"
+                           oninput="tinhTien(this)" />
+                </td>
+
+                <td>
+                    <input name="ChiTiets[${index}].SoLuong"
+                           class="form-control"
+                           type="number"
+                           oninput="tinhTien(this)" />
+                </td>
+
+                <td>
+                    <input name="ChiTiets[${index}].HeSo"
+                           value="1"
+                           class="form-control"
+                           type="number"
+                           oninput="tinhTien(this)" />
+                </td>
+
+                <td class="thanhTien fw-bold text-danger">
+                    0
+                </td>
+
+                <td>
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            onclick="removeRow(this)">
+
+                        <i class="bi bi-trash"></i>
+
+                    </button>
+                </td>
+
             </tr>`;
-            document.querySelector("#detailTable tbody").insertAdjacentHTML("beforeend", row);
+
+            document.querySelector("#detailTable tbody")
+                .insertAdjacentHTML("beforeend", row);
+
             index++;
         }
 
         function tinhTien(el) {
+
             let row = el.closest("tr");
 
-            let donGia = parseFloat(row.children[1].children[0].value) || 0;
-            let soLuong = parseFloat(row.children[2].children[0].value) || 0;
-            let heSo = parseFloat(row.children[3].children[0].value) || 1;
+            let donGia =
+                parseFloat(
+                    row.children[1].children[0].value
+                ) || 0;
 
-            let thanhTien = donGia * soLuong * heSo;
+            let soLuong =
+                parseFloat(
+                    row.children[2].children[0].value
+                ) || 0;
 
-            row.querySelector(".thanhTien").innerText = thanhTien.toLocaleString();
+            let heSo =
+                parseFloat(
+                    row.children[3].children[0].value
+                ) || 1;
+
+            let thanhTien =
+                donGia * soLuong * heSo;
+
+            row.querySelector(".thanhTien")
+                .innerText =
+                thanhTien.toLocaleString("vi-VN");
 
             tinhTong();
         }
 
         function tinhTong() {
+
             let total = 0;
-            document.querySelectorAll(".thanhTien").forEach(td => {
-                total += parseFloat(td.innerText.replace(/,/g, "")) || 0;
-            });
-            document.getElementById("tongTien").innerText = total.toLocaleString();
+
+            document.querySelectorAll(".thanhTien")
+                .forEach(td => {
+
+                    total += parseFloat(
+                        td.innerText.replace(/\./g, "")
+                    ) || 0;
+                });
+
+            document.getElementById("tongTien")
+                .innerText =
+                total.toLocaleString("vi-VN");
         }
 
         function removeRow(btn) {
+
             btn.closest("tr").remove();
+
             tinhTong();
         }
 
         function themDien() {
+
             let moi = prompt("Chỉ số điện mới:");
             let cu = prompt("Chỉ số điện cũ:");
+
             let soLuong = moi - cu;
-            addCustomRow("Tiền điện", 3000, soLuong);
+
+            addCustomRow(
+                "Tiền điện",
+                3000,
+                soLuong
+            );
         }
 
         function themNuoc() {
+
             let moi = prompt("Chỉ số nước mới:");
             let cu = prompt("Chỉ số nước cũ:");
+
             let soLuong = moi - cu;
-            addCustomRow("Tiền nước", 15000, soLuong);
+
+            addCustomRow(
+                "Tiền nước",
+                15000,
+                soLuong
+            );
         }
 
-        function addCustomRow(noiDung, donGia, soLuong) {
+        function addCustomRow(
+            noiDung,
+            donGia,
+            soLuong
+        ) {
+
+            let thanhTien =
+                donGia * soLuong;
+
             let row = `
             <tr>
-                <td><input name="ChiTiets[${index}].NoiDung" value="${noiDung}" class="form-control" /></td>
-                <td><input name="ChiTiets[${index}].DonGia" value="${donGia}" class="form-control" /></td>
-                <td><input name="ChiTiets[${index}].SoLuong" value="${soLuong}" class="form-control" /></td>
-                <td><input name="ChiTiets[${index}].HeSo" value="1" class="form-control" /></td>
-                <td class="thanhTien">${(donGia * soLuong).toLocaleString()}</td>
-                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button></td>
+
+                <td>
+                    <input name="ChiTiets[${index}].NoiDung"
+                           value="${noiDung}"
+                           class="form-control" />
+                </td>
+
+                <td>
+                    <input name="ChiTiets[${index}].DonGia"
+                           value="${donGia}"
+                           class="form-control"
+                           type="number" />
+                </td>
+
+                <td>
+                    <input name="ChiTiets[${index}].SoLuong"
+                           value="${soLuong}"
+                           class="form-control"
+                           type="number" />
+                </td>
+
+                <td>
+                    <input name="ChiTiets[${index}].HeSo"
+                           value="1"
+                           class="form-control"
+                           type="number" />
+                </td>
+
+                <td class="thanhTien fw-bold text-danger">
+                    ${thanhTien.toLocaleString("vi-VN")}
+                </td>
+
+                <td>
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            onclick="removeRow(this)">
+
+                        <i class="bi bi-trash"></i>
+
+                    </button>
+                </td>
+
             </tr>`;
-            document.querySelector("#detailTable tbody").insertAdjacentHTML("beforeend", row);
+
+            document.querySelector("#detailTable tbody")
+                .insertAdjacentHTML("beforeend", row);
+
             index++;
+
             tinhTong();
         }
+
     </script>
 }

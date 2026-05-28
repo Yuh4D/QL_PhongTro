@@ -11,7 +11,7 @@ using WebQLPT.Models;
 
 namespace WebQLPT.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class DangTinsController : Controller
     {
         private readonly AppDbContext _context;
@@ -22,6 +22,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: DangTins
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var appDbContext = _context.DangTins.Include(d => d.ChuTro).Include(d => d.PhongTro);
@@ -29,6 +30,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: DangTins/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -95,8 +97,8 @@ namespace WebQLPT.Controllers
             {
                 return NotFound();
             }
-            ViewData["ChuTroId"] = new SelectList(_context.ChuTros, "Id", "Id", dangTin.ChuTroId);
-            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "Id", dangTin.PhongTroId);
+            ViewData["ChuTroId"] = new SelectList(_context.ChuTros, "Id", "TenChuTro", dangTin.ChuTroId);
+            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "TenPhong", dangTin.PhongTroId);
             return View(dangTin);
         }
 
@@ -133,8 +135,8 @@ namespace WebQLPT.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ChuTroId"] = new SelectList(_context.ChuTros, "Id", "Id", dangTin.ChuTroId);
-            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "Id", dangTin.PhongTroId);
+            ViewData["ChuTroId"] = new SelectList(_context.ChuTros, "Id", "TenChuTro", dangTin.ChuTroId);
+            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "TenPhong", dangTin.PhongTroId);
             return View(dangTin);
         }
 

@@ -2,18 +2,106 @@
 
 @{
     ViewData["Title"] = "Xóa hóa đơn";
+    Layout = "_LayoutAdmin";
 }
 
-<h3>Bạn có chắc muốn xóa?</h3>
+<div class="row justify-content-center">
 
-<div>
-    <p><b>Phòng:</b> @Model.PhongTro?.TenPhong</p>
-    <p><b>Khách:</b> @Model.KhachThue?.TenKhach</p>
-    <p><b>Tổng tiền:</b> @Model.TongTien</p>
+    <div class="col-lg-6">
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+
+                    <div class="display-4 text-danger mb-3">
+                        <i class="bi bi-trash3-fill"></i>
+                    </div>
+
+                    <h3 class="fw-bold text-danger">
+                        Xóa hóa đơn
+                    </h3>
+
+                    <p class="text-muted">
+                        Bạn có chắc chắn muốn xóa hóa đơn này?
+                    </p>
+
+                </div>
+
+                <div class="border rounded-3 p-3 bg-light mb-4">
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Phòng trọ
+                        </small>
+
+                        <div class="fw-semibold">
+                            @Model.PhongTro?.TenPhong
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Khách thuê
+                        </small>
+
+                        <div class="fw-semibold">
+                            @Model.KhachThue?.TenKhach
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <small class="text-muted">
+                            Tổng tiền
+                        </small>
+
+                        <div class="fw-bold text-danger">
+
+                            @Model.TongTien.ToString("N0",
+                                     new System.Globalization.CultureInfo("vi-VN")) đ
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <form asp-action="Delete">
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="d-flex gap-2 justify-content-center">
+
+                        <button type="submit"
+                                class="btn btn-danger px-4">
+
+                            <i class="bi bi-trash me-1"></i>
+                            Xóa
+
+                        </button>
+
+                        <a asp-action="Index"
+                               class="btn btn-secondary px-4">
+
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Hủy
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
-
-<form asp-action="Delete">
-    <input type="hidden" asp-for="Id" />
-    <input type="submit" value="Xóa" class="btn btn-danger" />
-    <a asp-action="Index">Hủy</a>
-</form>

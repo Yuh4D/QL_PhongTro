@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WebQLPT.Data;
+using WebQLPT.Helpers;
 using WebQLPT.Models.ViewModels;
 
 namespace WebQLPT.Controllers
@@ -19,29 +20,88 @@ namespace WebQLPT.Controllers
 
         public IActionResult Index()
         {
-            // THỐNG KÊ
-            ViewBag.SoPhong = _context.PhongTros.Count();
+            // ADMIN
+            if (User.IsInRole("admin"))
+            {
+                ViewBag.SoPhong = _context.PhongTros.Count();
 
-            ViewBag.SoKhach = _context.KhachThues.Count();
+                ViewBag.SoKhach = _context.KhachThues.Count();
 
-            ViewBag.SoHoaDon = _context.HoaDons.Count();
+                ViewBag.SoChuTro = _context.ChuTros.Count();
 
-            ViewBag.SoChuTro = _context.ChuTros.Count();
+                ViewBag.SoHoaDon =
+                    _context.HoaDons.Count();
 
-            // PHÒNG TRỐNG
-            ViewBag.PhongTrong =
-                _context.PhongTros
-                    .Count(x => x.TrangThai == "Trống");
+                ViewBag.SoHopDong =
+                    _context.HopDongs.Count();
 
-            // PHÒNG ĐÃ THUÊ
-            ViewBag.PhongDaThue =
-                _context.PhongTros
-                    .Count(x => x.TrangThai == "Đã thuê");
+                return View();
+            }
 
-            // HÓA ĐƠN CHƯA THANH TOÁN
-            ViewBag.HoaDonChuaThanhToan =
-                _context.HoaDons
-                    .Count(x => x.TrangThai == "Chưa thanh toán");
+            // CHỦ TRỌ
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId =
+                    UserHelper.GetChuTroId(User);
+
+                ViewBag.SoPhong =
+                    _context.PhongTros
+                        .Count(p => p.ChuTroId == chuTroId);
+
+                ViewBag.PhongDaThue =
+                    _context.PhongTros
+                        .Count(p =>
+                            p.ChuTroId == chuTroId &&
+                            p.TrangThai == "Đã thuê");
+
+                ViewBag.SoKhach =
+                    _context.KhachThues
+                        .Count(k =>
+                            k.PhongTro != null &&
+                            k.PhongTro.ChuTroId == chuTroId);
+
+                ViewBag.HoaDonChuaThanhToan =
+                    _context.HoaDons
+                        .Count(h =>
+                            h.PhongTro != null &&
+                            h.PhongTro.ChuTroId == chuTroId &&
+                            h.TrangThai != "Đã thanh toán");
+
+                return View();
+            }
+
+            // KHÁCH THUÊ
+            if (User.IsInRole("khachthue"))
+            {
+                var khachId = UserHelper.GetKhachThueId(User);
+
+                if (khachId == null)
+                {
+                    return Forbid();
+                }
+
+                var hopDong = _context.HopDongs
+                    .Include(h => h.PhongTro)
+                    .Where(h => h.KhachThueId == khachId.Value)
+                    .OrderByDescending(h => h.NgayBatDau)
+                    .FirstOrDefault();
+
+                ViewBag.TenPhong =
+                    hopDong?.PhongTro?.TenPhong ?? "Chưa có phòng";
+
+                ViewBag.GiaPhong =
+                    hopDong?.PhongTro?.Gia ?? 0;
+
+                ViewBag.HanHopDong =
+                    hopDong?.NgayKetThuc;
+
+                ViewBag.HoaDonChuaThanhToan =
+                    _context.HoaDons.Count(h =>
+                        h.KhachThueId == khachId.Value &&
+                        h.TrangThai != "Đã thanh toán");
+
+                return View();
+            }
 
             return View();
         }

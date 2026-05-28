@@ -1,30 +1,92 @@
 ﻿@model IEnumerable<WebQLPT.Models.HopDong>
 
-<h2>Hợp đồng của tôi</h2>
+@{
+    ViewData["Title"] = "Hợp đồng của tôi";
+    Layout = "_LayoutAdmin";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Phòng</th>
-            <th>Ngày bắt đầu</th>
-            <th></th>
-        </tr>
-    </thead>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.PhongTro?.TenPhong</td>
-                <td>@item.NgayBatDau</td>
+    <div>
 
-                <td>
-                    <a asp-action="Details"
-                           asp-route-id="@item.Id">
-                        Chi tiết
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-file-earmark-text-fill me-2"></i>
+            Hợp đồng của tôi
+        </h2>
+
+        <p class="text-muted mb-0">
+            Danh sách hợp đồng thuê phòng của bạn
+        </p>
+
+    </div>
+
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-dark">
+
+                <tr>
+                    <th>Phòng</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Tiền cọc</th>
+                    <th width="140">Thao tác</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td class="fw-semibold">
+
+                            <i class="bi bi-building me-1 text-primary"></i>
+                            @item.PhongTro?.TenPhong
+
+                        </td>
+
+                        <td>
+                            @item.NgayBatDau.ToString("dd/MM/yyyy")
+                        </td>
+
+                        <td>
+                            @item.NgayKetThuc.ToString("dd/MM/yyyy")
+                        </td>
+
+                        <td class="text-danger fw-bold">
+
+                            @item.TienCoc.ToString("N0",
+                                     new System.Globalization.CultureInfo("vi-VN")) đ
+
+                        </td>
+
+                        <td>
+
+                            <a asp-action="Details"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-info btn-sm">
+
+                                <i class="bi bi-eye"></i>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

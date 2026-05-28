@@ -1,40 +1,123 @@
 ﻿@model IEnumerable<WebQLPT.Models.HoaDon>
 
-<h2>Hóa đơn của tôi</h2>
+@{
+    ViewData["Title"] = "Hóa đơn của tôi";
+    Layout = "_LayoutAdmin";
+}
 
-<table class="table">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <thead>
-        <tr>
-            <th>Phòng</th>
-            <th>Tổng tiền</th>
-            <th>Trạng thái</th>
-            <th></th>
-        </tr>
-    </thead>
+    <div>
 
-    <tbody>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-receipt-cutoff me-2"></i>
+            Hóa đơn của tôi
+        </h2>
 
-        @foreach (var item in Model)
-        {
-            <tr>
+        <p class="text-muted mb-0">
+            Theo dõi tình trạng thanh toán hóa đơn
+        </p>
 
-                <td>@item.PhongTro?.TenPhong</td>
+    </div>
 
-                <td>@item.TongTien</td>
+</div>
 
-                <td>@item.TrangThai</td>
+<div class="card shadow-sm border-0 rounded-4">
 
-                <td>
-                    <a asp-action="Details"
-                           asp-route-id="@item.Id">
-                        Chi tiết
-                    </a>
-                </td>
+    <div class="card-body">
 
-            </tr>
-        }
+        <table class="table table-hover align-middle">
 
-    </tbody>
+            <thead class="table-dark">
 
-</table>
+                <tr>
+                    <th>Phòng</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th width="220">Thao tác</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td class="fw-semibold">
+
+                            <i class="bi bi-building me-1 text-primary"></i>
+                            @item.PhongTro?.TenPhong
+
+                        </td>
+
+                        <td class="text-danger fw-bold">
+
+                            @item.TongTien.ToString("N0",
+                                     new System.Globalization.CultureInfo("vi-VN")) đ
+
+                        </td>
+
+                        <td>
+
+                            @if (item.TrangThai == "Đã thanh toán")
+                            {
+                                <span class="badge bg-success">
+                                    Đã thanh toán
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Chưa thanh toán
+                                </span>
+                            }
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex gap-2">
+
+                                <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-info btn-sm">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+                                @if (User.IsInRole("khachthue")
+                                                                     && item.TrangThai != "Đã thanh toán")
+                                {
+                                    <form asp-action="ConfirmPayment"
+                                          asp-route-id="@item.Id"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-success btn-sm">
+
+                                            <i class="bi bi-credit-card"></i>
+
+                                        </button>
+
+                                    </form>
+                                }
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

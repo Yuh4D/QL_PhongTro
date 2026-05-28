@@ -19,7 +19,34 @@
 
 <br />
 
-<div>
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Chỉnh sửa</a>
+<div class="mt-4 d-flex gap-2">
+
+    @if (User.IsInRole("khachthue"))
+    {
+        <a asp-action="MyContracts"
+               class="btn btn-secondary">
+             Quay lại
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index"
+               class="btn btn-secondary">
+             Quay lại
+        </a>
+    }
+
+    <a asp-action="ExportPdf" asp-route-id="@Model.Id" class="btn btn-danger">
+        🖨 In PDF
+    </a>
+
+    @if (!User.IsInRole("khachthue"))
+    {
+        <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-warning">
+             Chỉnh sửa
+        </a>
+    }
+
 </div>

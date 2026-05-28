@@ -60,7 +60,20 @@
         <a asp-action="ExportPdf" asp-route-id="@Model.Id" class="btn btn-danger">
             🖨 In PDF
         </a>
-        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        @if (User.IsInRole("khachthue"))
+        {
+            <a asp-action="MyBills"
+                   class="btn btn-secondary">
+                Quay lại
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index"
+                   class="btn btn-secondary">
+                Quay lại
+            </a>
+        }
     </div>
 
 </div>
