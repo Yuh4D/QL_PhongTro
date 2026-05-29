@@ -34,7 +34,8 @@
 
     <div class="card-body p-4">
 
-        <form asp-action="Create">
+        <form asp-action="Create"
+              enctype="multipart/form-data">
 
             <div asp-validation-summary="All"
                  class="alert alert-danger">
@@ -91,19 +92,15 @@
 
                 </div>
 
-                <div class="col-md-6">
+                <div class="form-group mb-2">
 
-                    <label asp-for="HinhAnh"
-                           class="form-label fw-semibold">
+                    <label class="form-label fw-semibold">
+                        Hình ảnh
                     </label>
 
-                    <input asp-for="HinhAnh"
-                           class="form-control"
-                           placeholder="Link ảnh..." />
-
-                    <span asp-validation-for="HinhAnh"
-                          class="text-danger">
-                    </span>
+                    <input type="file"
+                           name="ImageFile"
+                           class="form-control" />
 
                 </div>
 

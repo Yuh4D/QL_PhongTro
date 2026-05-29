@@ -34,7 +34,8 @@
 
     <div class="card-body p-4">
 
-        <form asp-action="Edit">
+        <form asp-action="Edit"
+              enctype="multipart/form-data">
 
             <input type="hidden" asp-for="Id" />
 
@@ -92,18 +93,28 @@
 
                 <div class="col-md-6">
 
-                    <label asp-for="HinhAnh"
-                           class="form-label fw-semibold">
+                    <label class="form-label fw-semibold">
+                        Hình ảnh mới
                     </label>
 
-                    <input asp-for="HinhAnh"
+                    <input type="file"
+                           name="ImageFile"
                            class="form-control" />
 
-                    <span asp-validation-for="HinhAnh"
-                          class="text-danger">
-                    </span>
+                    @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                    {
+                        <div class="col-12">
+
+                            <img src="@Model.HinhAnh"
+                                 class="img-thumbnail rounded"
+                                 style="max-height:250px;" />
+
+                        </div>
+                    }
 
                 </div>
+
+                
 
                 <div class="col-md-6">
 
