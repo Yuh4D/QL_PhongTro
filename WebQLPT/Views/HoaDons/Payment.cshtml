@@ -85,22 +85,23 @@
 
                     </div>
 
-                    <form asp-action="ConfirmPayment"
+                    <form asp-controller="VnPay"
+                          asp-action="CreatePaymentUrl"
                           method="post">
 
                         @Html.AntiForgeryToken()
 
                         <input type="hidden"
-                               name="id"
+                               name="hoaDonId"
                                value="@Model.Id" />
 
                         <div class="d-grid">
 
                             <button type="submit"
-                                    class="btn btn-success btn-lg">
+                                    class="btn btn-primary btn-lg">
 
-                                <i class="bi bi-check-circle-fill me-2"></i>
-                                Xác nhận thanh toán
+                                <i class="bi bi-wallet2 me-2"></i>
+                                Thanh toán bằng VNPay
 
                             </button>
 

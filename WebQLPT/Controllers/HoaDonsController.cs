@@ -76,7 +76,6 @@ namespace WebQLPT.Controllers
                 .Include(h => h.KhachThue)
                 .Include(h => h.PhongTro)
                     .ThenInclude(p => p.ChuTro)
-                .Include(h => h.HoaDonChiTiets)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (hoaDon == null)
@@ -156,7 +155,7 @@ namespace WebQLPT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(HoaDon hoaDon)
         {
-            // Kiểm tra phòng tồn tại
+            
             var phongTro = await _context.PhongTros
                 .FirstOrDefaultAsync(p => p.Id == hoaDon.PhongTroId);
 
@@ -165,7 +164,7 @@ namespace WebQLPT.Controllers
                 return NotFound();
             }
 
-            // CHỦ TRỌ chỉ được tạo hóa đơn phòng mình
+           
             if (User.IsInRole("chutro"))
             {
                 var chuTroId = UserHelper.GetChuTroId(User);
@@ -187,7 +186,7 @@ namespace WebQLPT.Controllers
                 return View(hoaDon);
             }
 
-            // Lấy khách thuê theo phòng
+           
             var khach = await _context.KhachThues
                 .FirstOrDefaultAsync(k =>
                     k.PhongTroId == hoaDon.PhongTroId);
@@ -195,50 +194,96 @@ namespace WebQLPT.Controllers
             if (khach == null)
             {
                 TempData["Error"] = "Phòng chưa có khách thuê!";
+                return RedirectToAction(nameof(Create));
+            }
+
+            
+            var hopDong = await _context.HopDongs
+                .Include(h => h.PhongTro)
+                .FirstOrDefaultAsync(h =>
+                    h.PhongTroId == hoaDon.PhongTroId &&
+                    h.KhachThueId == khach.Id);
+
+            if (hopDong == null)
+            {
+                TempData["Error"] = "Không tìm thấy hợp đồng!";
+                return RedirectToAction(nameof(Create));
+            }
+
+           
+            hoaDon.KhachThueId = khach.Id;
+
+          
+            hoaDon.Thang = hoaDon.NgayTao.Month;
+            hoaDon.Nam = hoaDon.NgayTao.Year;
+
+          
+            hoaDon.TienPhong = hopDong.PhongTro.Gia;
+
+         
+            var hoaDonTruoc = await _context.HoaDons
+                .Where(h => h.PhongTroId == hoaDon.PhongTroId)
+                .OrderByDescending(h => h.Id)
+                .FirstOrDefaultAsync();
+
+           
+            hoaDon.ChiSoDienCu =
+                hoaDonTruoc?.ChiSoDienMoi ?? 0;
+
+            hoaDon.ChiSoNuocCu =
+                hoaDonTruoc?.ChiSoNuocMoi ?? 0;
+
+            if (hoaDon.ChiSoDienMoi < hoaDon.ChiSoDienCu)
+            {
+                TempData["Error"] =
+                    "Chỉ số điện mới phải lớn hơn hoặc bằng chỉ số cũ.";
 
                 return RedirectToAction(nameof(Create));
             }
 
-            // Gán tự động
-            hoaDon.KhachThueId = khach.Id;
-
-            hoaDon.TrangThai = "Mới tạo";
-
-            _context.Add(hoaDon);
-
-            await _context.SaveChangesAsync();
-
-            decimal tong = 0;
-
-            if (hoaDon.ChiTiets != null)
+            if (hoaDon.ChiSoNuocMoi < hoaDon.ChiSoNuocCu)
             {
-                foreach (var ct in hoaDon.ChiTiets)
-                {
-                    if (string.IsNullOrEmpty(ct.NoiDung))
-                        continue;
+                TempData["Error"] =
+                    "Chỉ số nước mới phải lớn hơn hoặc bằng chỉ số cũ.";
 
-                    ct.HoaDonId = hoaDon.Id;
-
-                    if (ct.HeSo == 0)
-                        ct.HeSo = 1;
-
-                    ct.ThanhTien =
-                        ct.DonGia *
-                        ct.SoLuong *
-                        ct.HeSo;
-
-                    tong += ct.ThanhTien;
-
-                    _context.HoaDonChiTiets.Add(ct);
-                }
+                return RedirectToAction(nameof(Create));
             }
 
-            hoaDon.TongTien = tong;
+          
+            const decimal giaDien = 3000;
+            const decimal giaNuoc = 15000;
+
+            
+            var soDien =
+                hoaDon.ChiSoDienMoi -
+                hoaDon.ChiSoDienCu;
+
+            var soNuoc =
+                hoaDon.ChiSoNuocMoi -
+                hoaDon.ChiSoNuocCu;
+
+           
+            hoaDon.TienDien =
+                soDien * giaDien;
+
+            hoaDon.TienNuoc =
+                soNuoc * giaNuoc;
+
+        
+            hoaDon.TongTien =
+                hoaDon.TienPhong +
+                hoaDon.TienDien +
+                hoaDon.TienNuoc;
+
+            hoaDon.TrangThai =
+                "Chưa thanh toán";
+
+            _context.HoaDons.Add(hoaDon);
 
             await _context.SaveChangesAsync();
 
             return RedirectToAction(
-                "Details",
+                nameof(Details),
                 new { id = hoaDon.Id });
         }
 
@@ -433,7 +478,6 @@ namespace WebQLPT.Controllers
                 .Include(h => h.PhongTro)
                     .ThenInclude(p => p.ChuTro)
                 .Include(h => h.KhachThue)
-                .Include(h => h.HoaDonChiTiets)
                 .FirstOrDefaultAsync(h => h.Id == id);
 
             if (hoaDon == null)
@@ -476,6 +520,8 @@ namespace WebQLPT.Controllers
             var hoaDons = await _context.HoaDons
                 .Include(h => h.PhongTro)
                 .Where(h => h.KhachThueId == khachThueId)
+                .OrderByDescending(h => h.Nam)
+                .ThenByDescending(h => h.Thang)
                 .ToListAsync();
 
             return View(hoaDons);
@@ -530,6 +576,37 @@ namespace WebQLPT.Controllers
             TempData["Success"] = "Thanh toán thành công";
 
             return RedirectToAction(nameof(MyBills));
+        }
+
+        [Authorize(Roles = "chutro")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmCashPayment(int id)
+        {
+            var hoaDon = await _context.HoaDons
+                .Include(h => h.PhongTro)
+                .FirstOrDefaultAsync(h => h.Id == id);
+
+            if (hoaDon == null)
+                return NotFound();
+
+            // Kiểm tra hóa đơn thuộc phòng của chủ trọ này
+            var chuTroId = UserHelper.GetChuTroId(User);
+            if (hoaDon.PhongTro.ChuTroId != chuTroId)
+                return Forbid();
+
+            if (hoaDon.TrangThai == "Đã thanh toán")
+            {
+                TempData["Error"] = "Hóa đơn này đã được thanh toán trước đó!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            hoaDon.TrangThai = "Đã thanh toán";
+            _context.Update(hoaDon);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Xác nhận thanh toán tiền mặt thành công!";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

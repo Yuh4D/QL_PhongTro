@@ -8,16 +8,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-
         <h2 class="fw-bold mb-1">
             <i class="bi bi-receipt-cutoff me-2"></i>
             Hóa đơn của tôi
         </h2>
 
         <p class="text-muted mb-0">
-            Theo dõi tình trạng thanh toán hóa đơn
+            Theo dõi các khoản phí và trạng thái thanh toán
         </p>
-
     </div>
 
 </div>
@@ -26,98 +24,210 @@
 
     <div class="card-body">
 
-        <table class="table table-hover align-middle">
+        <div class="table-responsive">
 
-            <thead class="table-dark">
+            <table class="table table-hover align-middle">
 
-                <tr>
-                    <th>Phòng</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th width="220">Thao tác</th>
-                </tr>
+                <thead class="table-dark text-center">
 
-            </thead>
-
-            <tbody>
-
-                @foreach (var item in Model)
-                {
                     <tr>
+                        <th>Tháng</th>
+                        <th>Phòng</th>
+                        <th>Tiền phòng</th>
+                        <th>Điện</th>
+                        <th>Nước</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th width="180">Thao tác</th>
+                    </tr>
 
-                        <td class="fw-semibold">
+                </thead>
 
-                            <i class="bi bi-building me-1 text-primary"></i>
-                            @item.PhongTro?.TenPhong
+                <tbody>
 
-                        </td>
+                    @foreach (var item in Model.OrderByDescending(x => x.Nam)
+                                                                   .ThenByDescending(x => x.Thang))
+                    {
+                        <tr>
 
-                        <td class="text-danger fw-bold">
+                            <td class="text-center">
 
-                            @item.TongTien.ToString("N0",
-                                     new System.Globalization.CultureInfo("vi-VN")) đ
-
-                        </td>
-
-                        <td>
-
-                            @if (item.TrangThai == "Đã thanh toán")
-                            {
-                                <span class="badge bg-success">
-                                    Đã thanh toán
+                                <span class="badge bg-primary fs-6">
+                                    @item.Thang/@item.Nam
                                 </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning text-dark">
-                                    Chưa thanh toán
-                                </span>
-                            }
 
-                        </td>
+                            </td>
 
-                        <td>
+                            <td>
 
-                            <div class="d-flex gap-2">
+                                <div class="fw-semibold">
+                                    @item.PhongTro?.TenPhong
+                                </div>
 
-                                <a asp-action="Details"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-info btn-sm">
+                            </td>
 
-                                    <i class="bi bi-eye"></i>
+                            <td>
 
-                                </a>
+                                <span class="text-primary fw-bold">
+                                    @item.TienPhong.ToString("N0")
+                                </span> đ
 
-                                @if (User.IsInRole("khachthue")
-                                                                     && item.TrangThai != "Đã thanh toán")
+                            </td>
+
+                            <td>
+
+                                <div class="fw-bold text-warning">
+
+                                    @item.TienDien.ToString("N0") đ
+
+                                </div>
+
+                                <small class="text-muted">
+
+                                    @item.ChiSoDienCu →
+                                    @item.ChiSoDienMoi
+
+                                    <br />
+
+                                    Tiêu thụ:
+                                    @(item.ChiSoDienMoi - item.ChiSoDienCu)
+
+                                </small>
+
+                            </td>
+
+                            <td>
+
+                                <div class="fw-bold text-info">
+
+                                    @item.TienNuoc.ToString("N0") đ
+
+                                </div>
+
+                                <small class="text-muted">
+
+                                    @item.ChiSoNuocCu →
+                                    @item.ChiSoNuocMoi
+
+                                    <br />
+
+                                    Tiêu thụ:
+                                    @(item.ChiSoNuocMoi - item.ChiSoNuocCu)
+
+                                </small>
+
+                            </td>
+
+                            <td>
+
+                                <span class="text-danger fw-bold fs-5">
+
+                                    @item.TongTien.ToString("N0")
+
+                                </span> đ
+
+                            </td>
+
+                            <td>
+
+                                @if (item.TrangThai == "Đã thanh toán")
                                 {
-                                    <form asp-action="ConfirmPayment"
-                                          asp-route-id="@item.Id"
-                                          method="post">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit"
-                                                class="btn btn-success btn-sm">
-
-                                            <i class="bi bi-credit-card"></i>
-
-                                        </button>
-
-                                    </form>
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Đã thanh toán
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-clock"></i>
+                                        Chưa thanh toán
+                                    </span>
                                 }
 
-                            </div>
+                            </td>
 
-                        </td>
+                            <td>
 
-                    </tr>
-                }
+                                <div class="d-flex gap-2 justify-content-center">
 
-            </tbody>
+                                    <a asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-info btn-sm">
 
-        </table>
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+                                    @if (item.TrangThai != "Đã thanh toán")
+                                    {
+                                        <form asp-controller="VnPay"
+                                              asp-action="CreatePaymentUrl"
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   name="hoaDonId"
+                                                   value="@item.Id" />
+
+                                            <button type="submit"
+                                                    class="btn btn-success btn-sm">
+
+                                                <i class="bi bi-credit-card"></i>
+
+                                            </button>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary btn-sm"
+                                                disabled>
+
+                                            <i class="bi bi-check-circle"></i>
+
+                                        </button>
+                                    }
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
 </div>
+
+@section Scripts
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: '@TempData["Success"]'
+            });
+        </script>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: '@TempData["Error"]'
+            });
+        </script>
+    }
+}

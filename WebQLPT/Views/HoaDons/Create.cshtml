@@ -70,96 +70,33 @@
         </div>
 
     </div>
-
     <div class="card border-0 shadow-sm rounded-4">
 
         <div class="card-body">
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="row g-3">
 
-                <h5 class="fw-bold mb-0">
-                    <i class="bi bi-list-check me-2"></i>
-                    Chi tiết hóa đơn
-                </h5>
+                <div class="col-md-6">
+                    <label>Chỉ số điện mới</label>
 
-                <div class="d-flex gap-2">
+                    <input asp-for="ChiSoDienMoi"
+                           class="form-control" />
+                </div>
 
-                    <button type="button"
-                            class="btn btn-success"
-                            onclick="addRow()">
+                <div class="col-md-6">
+                    <label>Chỉ số nước mới</label>
 
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Thêm dòng
-
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-warning"
-                            onclick="themDien()">
-
-                        <i class="bi bi-lightning-charge me-1"></i>
-                        Tiền điện
-
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-info text-white"
-                            onclick="themNuoc()">
-
-                        <i class="bi bi-droplet me-1"></i>
-                        Tiền nước
-
-                    </button>
-
+                    <input asp-for="ChiSoNuocMoi"
+                           class="form-control" />
                 </div>
 
             </div>
 
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle"
-                       id="detailTable">
-
-                    <thead class="table-dark">
-
-                        <tr>
-                            <th>Nội dung</th>
-                            <th width="150">Đơn giá</th>
-                            <th width="120">Số lượng</th>
-                            <th width="120">Hệ số</th>
-                            <th width="180">Thành tiền</th>
-                            <th width="80"></th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody></tbody>
-
-                </table>
-
-            </div>
-
-            <div class="text-end mt-4">
-
-                <h4 class="fw-bold">
-
-                    Tổng tiền:
-                    <span id="tongTien"
-                          class="text-danger">
-                        0
-                    </span>
-                    VNĐ
-
-                </h4>
-
-            </div>
-
-            <div class="mt-4 d-flex gap-2">
+            <div class="mt-4">
 
                 <button type="submit"
-                        class="btn btn-primary px-4">
+                        class="btn btn-primary">
 
-                    <i class="bi bi-save me-1"></i>
                     Tạo hóa đơn
 
                 </button>
@@ -167,7 +104,6 @@
                 <a asp-action="Index"
                        class="btn btn-secondary">
 
-                    <i class="bi bi-arrow-left me-1"></i>
                     Quay lại
 
                 </a>
@@ -175,6 +111,9 @@
             </div>
 
         </div>
+
+    </div>
+    
 
     </div>
 

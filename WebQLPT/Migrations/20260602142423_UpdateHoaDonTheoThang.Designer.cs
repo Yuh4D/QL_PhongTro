@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebQLPT.Data;
 
@@ -11,9 +12,11 @@ using WebQLPT.Data;
 namespace WebQLPT.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260602142423_UpdateHoaDonTheoThang")]
+    partial class UpdateHoaDonTheoThang
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,23 +161,14 @@ namespace WebQLPT.Migrations
                     b.Property<int>("KhachThueId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MaGiaoDichVNPay")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Nam")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("NgayTao")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("NgayThanhToan")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("PhongTroId")
                         .HasColumnType("int");
-
-                    b.Property<string>("PhuongThucThanhToan")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Thang")
                         .HasColumnType("int");
@@ -201,6 +195,40 @@ namespace WebQLPT.Migrations
                     b.HasIndex("PhongTroId");
 
                     b.ToTable("HoaDons");
+                });
+
+            modelBuilder.Entity("WebQLPT.Models.HoaDonChiTiet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("DonGia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("HeSo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("HoaDonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NoiDung")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ThanhTien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HoaDonId");
+
+                    b.ToTable("HoaDonChiTiets");
                 });
 
             modelBuilder.Entity("WebQLPT.Models.HopDong", b =>
@@ -360,6 +388,17 @@ namespace WebQLPT.Migrations
                     b.Navigation("PhongTro");
                 });
 
+            modelBuilder.Entity("WebQLPT.Models.HoaDonChiTiet", b =>
+                {
+                    b.HasOne("WebQLPT.Models.HoaDon", "HoaDon")
+                        .WithMany("HoaDonChiTiets")
+                        .HasForeignKey("HoaDonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HoaDon");
+                });
+
             modelBuilder.Entity("WebQLPT.Models.HopDong", b =>
                 {
                     b.HasOne("WebQLPT.Models.KhachThue", "KhachThue")
@@ -406,6 +445,11 @@ namespace WebQLPT.Migrations
                     b.Navigation("PhongTros");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebQLPT.Models.HoaDon", b =>
+                {
+                    b.Navigation("HoaDonChiTiets");
                 });
 
             modelBuilder.Entity("WebQLPT.Models.KhachThue", b =>

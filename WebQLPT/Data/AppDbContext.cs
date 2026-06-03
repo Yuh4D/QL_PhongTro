@@ -17,7 +17,7 @@ namespace WebQLPT.Data
         public DbSet<User> Users { get; set; } 
         public DbSet<HopDong> HopDongs { get; set; }
         public DbSet<HoaDon> HoaDons { get; set; }
-        public DbSet<HoaDonChiTiet> HoaDonChiTiets { get; set; } 
+   
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,4 +1,5 @@
 ﻿@model WebQLPT.Models.HoaDon
+
 @{
     Layout = null;
 }
@@ -7,27 +8,38 @@
 <html>
 <head>
     <meta charset="utf-8" />
+
     <style>
+
             body {
                 font-family: Arial;
                 font-size: 14px;
             }
 
             .container {
-                width: 700px;
+                width: 750px;
                 margin: auto;
             }
 
             .title {
                 text-align: center;
-                font-size: 22px;
+                font-size: 24px;
                 font-weight: bold;
                 margin-bottom: 20px;
             }
 
-            .info {
-                margin-bottom: 15px;
+            .subtitle {
+                text-align: center;
+                margin-bottom: 30px;
             }
+
+            .info {
+                margin-bottom: 20px;
+            }
+
+                .info p {
+                    margin: 5px 0;
+                }
 
             table {
                 width: 100%;
@@ -39,93 +51,171 @@
             }
 
             th, td {
-                padding: 8px;
+                padding: 10px;
+            }
+
+            .right {
+                text-align: right;
+            }
+
+            .center {
                 text-align: center;
             }
 
-            .left {
-                text-align: left;
+            .total-row {
+                font-weight: bold;
+                background-color: #f5f5f5;
             }
 
-            .total {
-                text-align: right;
+            .status {
+                margin-top: 20px;
                 font-size: 16px;
-                font-weight: bold;
-                margin-top: 10px;
             }
 
             .sign {
-                margin-top: 40px;
+                margin-top: 60px;
                 display: flex;
                 justify-content: space-between;
             }
 
                 .sign div {
+                    width: 40%;
                     text-align: center;
                 }
+
     </style>
+
 </head>
 
 <body>
+
     <div class="container">
 
-        <div class="title">HÓA ĐƠN THANH TOÁN</div>
+        <div class="title">
+            HÓA ĐƠN THANH TOÁN
+        </div>
+
+        <div class="subtitle">
+            Tháng @Model.Thang / @Model.Nam
+        </div>
 
         <div class="info">
-            <p><strong>Chủ trọ:</strong> @Model.PhongTro?.ChuTro?.TenChuTro</p>
-            <p><strong>Phòng:</strong> @Model.PhongTro?.TenPhong</p>
-            <p><strong>Khách thuê:</strong> @Model.KhachThue?.TenKhach</p>
-            <p><strong>Ngày tạo:</strong> @Model.NgayTao.ToString("dd/MM/yyyy")</p>
-            <p><strong>Hạn thanh toán:</strong> @Model.HanThanhToan.ToString("dd/MM/yyyy")</p>
+
+            <p>
+                <strong>Chủ trọ:</strong>
+                @Model.PhongTro?.ChuTro?.TenChuTro
+            </p>
+
+            <p>
+                <strong>Phòng:</strong>
+                @Model.PhongTro?.TenPhong
+            </p>
+
+            <p>
+                <strong>Khách thuê:</strong>
+                @Model.KhachThue?.TenKhach
+            </p>
+
+            <p>
+                <strong>Ngày tạo:</strong>
+                @Model.NgayTao.ToString("dd/MM/yyyy")
+            </p>
+
+            <p>
+                <strong>Hạn thanh toán:</strong>
+                @Model.HanThanhToan.ToString("dd/MM/yyyy")
+            </p>
+
         </div>
 
         <table>
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Nội dung</th>
-                    <th>Đơn giá</th>
-                    <th>SL</th>
-                    <th>HS</th>
-                    <th>Thành tiền</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int stt = 1;
-                }
 
-                @foreach (var item in Model.HoaDonChiTiets)
-                {
-                    <tr>
-                        <td>@stt</td>
-                        <td class="left">@item.NoiDung</td>
-                        <td>@item.DonGia.ToString("N0")</td>
-                        <td>@item.SoLuong</td>
-                        <td>@item.HeSo</td>
-                        <td>@item.ThanhTien.ToString("N0")</td>
-                    </tr>
-                    stt++;
-                }
+            <thead>
+
+                <tr>
+                    <th width="70%">Nội dung</th>
+                    <th width="30%">Thành tiền</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>
+                        Tiền phòng
+                    </td>
+
+                    <td class="right">
+                        @Model.TienPhong.ToString("N0")
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Tiền điện
+                        (@Model.ChiSoDienCu →
+                        @Model.ChiSoDienMoi)
+                    </td>
+
+                    <td class="right">
+                        @Model.TienDien.ToString("N0")
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Tiền nước
+                        (@Model.ChiSoNuocCu →
+                        @Model.ChiSoNuocMoi)
+                    </td>
+
+                    <td class="right">
+                        @Model.TienNuoc.ToString("N0")
+                    </td>
+                </tr>
+
+                <tr class="total-row">
+
+                    <td>
+                        TỔNG CỘNG
+                    </td>
+
+                    <td class="right">
+                        @Model.TongTien.ToString("N0") VNĐ
+                    </td>
+
+                </tr>
+
             </tbody>
+
         </table>
 
-        <div class="total">
-            Tổng tiền: @Model.TongTien.ToString("N0") VNĐ
+        <div class="status">
+
+            <strong>Trạng thái:</strong>
+
+            @Model.TrangThai
+
         </div>
 
         <div class="sign">
+
             <div>
-                Chủ trọ<br /><br /><br />
+                Chủ trọ
+                <br /><br /><br /><br />
                 (Ký tên)
             </div>
 
             <div>
-                Khách thuê<br /><br /><br />
+                Khách thuê
+                <br /><br /><br /><br />
                 (Ký tên)
             </div>
+
         </div>
 
     </div>
+
 </body>
 </html>

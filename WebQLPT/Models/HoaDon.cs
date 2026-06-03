@@ -17,18 +17,51 @@ namespace WebQLPT.Models
         [ValidateNever]
         public KhachThue? KhachThue { get; set; }
 
+
+
+        public int Thang { get; set; }
+
+        public int Nam { get; set; }
+
+
+
         public DateTime NgayTao { get; set; }
+
         public DateTime HanThanhToan { get; set; }
+
+     
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TienPhong { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TienDien { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TienNuoc { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal TongTien { get; set; }
 
-        public string? TrangThai { get; set; } // MoiTao, DaGui, DaThanhToan
 
-        [ValidateNever]
-        public List<HoaDonChiTiet>? HoaDonChiTiets { get; set; }
+        public int ChiSoDienCu { get; set; }
 
-        [NotMapped]
-        public List<HoaDonChiTiet> ChiTiets { get; set; } = new();
+        public int ChiSoDienMoi { get; set; }
+
+
+        public int ChiSoNuocCu { get; set; }
+
+        public int ChiSoNuocMoi { get; set; }
+
+        public string? TrangThai { get; set; }
+
+        public string? MaGiaoDichVNPay { get; set; }
+
+        public DateTime? NgayThanhToan { get; set; }
+
+        public string? PhuongThucThanhToan { get; set; }
+
+
+
     }
 }

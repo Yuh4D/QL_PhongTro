@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebQLPT.Data;
 
@@ -11,9 +12,11 @@ using WebQLPT.Data;
 namespace WebQLPT.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260602170003_RemoveHoaDonChiTiet")]
+    partial class RemoveHoaDonChiTiet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,23 +161,14 @@ namespace WebQLPT.Migrations
                     b.Property<int>("KhachThueId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MaGiaoDichVNPay")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Nam")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("NgayTao")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("NgayThanhToan")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("PhongTroId")
                         .HasColumnType("int");
-
-                    b.Property<string>("PhuongThucThanhToan")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Thang")
                         .HasColumnType("int");
