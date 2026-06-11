@@ -23,12 +23,14 @@
                 </p>
 
                 <form method="get"
+                      asp-action="Index"
                       class="d-flex gap-2">
 
                     <input type="text"
                            name="keyword"
+                           value="@ViewBag.Keyword"
                            class="form-control form-control-lg"
-                           placeholder="Tìm theo tiêu đề..." />
+                           placeholder="Tìm theo tiêu đề, phòng, chủ trọ..." />
 
                     <button class="btn btn-warning btn-lg">
                         Tìm kiếm
@@ -87,11 +89,23 @@
 
         <div class="row g-4">
 
-            @foreach (var item in Model)
+            @if (!Model.Any())
             {
-                <div class="col-lg-4 col-md-6">
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-search display-3 text-muted"></i>
+                    <h4 class="mt-3">Không tìm thấy tin đăng phù hợp</h4>
+                    <p class="text-muted">
+                        Hãy thử tìm kiếm bằng từ khóa khác.
+                    </p>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-4 col-md-6">
 
-                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
 
                         <!-- IMAGE -->
                         <div style="height:240px; overflow:hidden;">
@@ -167,8 +181,11 @@
                                 </a>
 
                                 @if (User.Identity != null &&
-                                                               User.Identity.IsAuthenticated &&
-                                                               (User.IsInRole("admin") || User.IsInRole("chutro")))
+                                     User.Identity.IsAuthenticated &&
+                                     (User.IsInRole("admin") ||
+                                      (User.IsInRole("chutro") &&
+                                       User.FindFirst("ChuTroId")?.Value ==
+                                       item.ChuTroId.ToString())))
                                 {
                                     <a asp-action="Edit"
                                            asp-route-id="@item.Id"
@@ -183,9 +200,10 @@
 
                         </div>
 
-                    </div>
+                        </div>
 
-                </div>
+                    </div>
+                }
             }
 
         </div>

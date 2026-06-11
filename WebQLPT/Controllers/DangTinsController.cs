@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebQLPT.Data;
+using WebQLPT.Helpers;
 using WebQLPT.Models;
 
 namespace WebQLPT.Controllers
@@ -24,10 +25,33 @@ namespace WebQLPT.Controllers
 
         // GET: DangTins
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? keyword)
         {
-            var appDbContext = _context.DangTins.Include(d => d.ChuTro).Include(d => d.PhongTro);
-            return View(await appDbContext.ToListAsync());
+            var query = _context.DangTins
+                .Include(d => d.ChuTro)
+                .Include(d => d.PhongTro)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                keyword = keyword.Trim();
+
+                query = query.Where(d =>
+                    d.TieuDe.Contains(keyword) ||
+                    d.NoiDung.Contains(keyword) ||
+                    (d.PhongTro != null &&
+                     d.PhongTro.TenPhong != null &&
+                     d.PhongTro.TenPhong.Contains(keyword)) ||
+                    (d.ChuTro != null &&
+                     d.ChuTro.TenChuTro != null &&
+                     d.ChuTro.TenChuTro.Contains(keyword)));
+            }
+
+            ViewBag.Keyword = keyword;
+
+            return View(await query
+                .OrderByDescending(d => d.NgayDang)
+                .ToListAsync());
         }
 
         // GET: DangTins/Details/5
@@ -55,9 +79,7 @@ namespace WebQLPT.Controllers
         [Authorize(Roles = "admin,chutro")]
         public IActionResult Create()
         {
-            ViewBag.PhongTroId = new SelectList(_context.PhongTros, "Id", "TenPhong");
-            ViewBag.ChuTroId = new SelectList(_context.ChuTros, "Id", "TenChuTro");
-
+            PopulateSelectLists();
             return View();
         }
 
@@ -69,6 +91,28 @@ namespace WebQLPT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,TieuDe,NoiDung,Gia,HinhAnh,PhongTroId,ChuTroId")] DangTin dangTin, IFormFile? ImageFile)
         {
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null)
+                {
+                    return Forbid();
+                }
+
+                var phongThuocChuTro = await _context.PhongTros
+                    .AnyAsync(p => p.Id == dangTin.PhongTroId &&
+                                   p.ChuTroId == chuTroId.Value);
+
+                if (!phongThuocChuTro)
+                {
+                    return Forbid();
+                }
+
+                dangTin.ChuTroId = chuTroId.Value;
+                ModelState.Remove(nameof(DangTin.ChuTroId));
+            }
+
             if (ModelState.IsValid)
             {
                 dangTin.NgayDang = DateTime.Now;
@@ -102,18 +146,7 @@ namespace WebQLPT.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.PhongTroId =
-                new SelectList(_context.PhongTros,
-                    "Id",
-                    "TenPhong",
-                    dangTin.PhongTroId);
-
-            ViewBag.ChuTroId =
-                new SelectList(_context.ChuTros,
-                    "Id",
-                    "TenChuTro",
-                    dangTin.ChuTroId);
-
+            PopulateSelectLists(dangTin.PhongTroId, dangTin.ChuTroId);
             return View(dangTin);
         }
 
@@ -131,8 +164,18 @@ namespace WebQLPT.Controllers
             {
                 return NotFound();
             }
-            ViewData["ChuTroId"] = new SelectList(_context.ChuTros, "Id", "TenChuTro", dangTin.ChuTroId);
-            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "TenPhong", dangTin.PhongTroId);
+
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null || dangTin.ChuTroId != chuTroId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
+            PopulateSelectLists(dangTin.PhongTroId, dangTin.ChuTroId);
             return View(dangTin);
         }
 
@@ -157,6 +200,28 @@ namespace WebQLPT.Controllers
             if (oldDangTin == null)
             {
                 return NotFound();
+            }
+
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null || oldDangTin.ChuTroId != chuTroId.Value)
+                {
+                    return Forbid();
+                }
+
+                var phongThuocChuTro = await _context.PhongTros
+                    .AnyAsync(p => p.Id == dangTin.PhongTroId &&
+                                   p.ChuTroId == chuTroId.Value);
+
+                if (!phongThuocChuTro)
+                {
+                    return Forbid();
+                }
+
+                dangTin.ChuTroId = chuTroId.Value;
+                ModelState.Remove(nameof(DangTin.ChuTroId));
             }
 
             // Nếu không upload ảnh mới -> giữ ảnh cũ
@@ -217,20 +282,7 @@ namespace WebQLPT.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["ChuTroId"] =
-                new SelectList(
-                    _context.ChuTros,
-                    "Id",
-                    "TenChuTro",
-                    dangTin.ChuTroId);
-
-            ViewData["PhongTroId"] =
-                new SelectList(
-                    _context.PhongTros,
-                    "Id",
-                    "TenPhong",
-                    dangTin.PhongTroId);
-
+            PopulateSelectLists(dangTin.PhongTroId, dangTin.ChuTroId);
             return View(dangTin);
         }
 
@@ -252,6 +304,16 @@ namespace WebQLPT.Controllers
                 return NotFound();
             }
 
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null || dangTin.ChuTroId != chuTroId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
             return View(dangTin);
         }
 
@@ -262,11 +324,23 @@ namespace WebQLPT.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var dangTin = await _context.DangTins.FindAsync(id);
-            if (dangTin != null)
+
+            if (dangTin == null)
             {
-                _context.DangTins.Remove(dangTin);
+                return NotFound();
             }
 
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null || dangTin.ChuTroId != chuTroId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
+            _context.DangTins.Remove(dangTin);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -274,6 +348,30 @@ namespace WebQLPT.Controllers
         private bool DangTinExists(int id)
         {
             return _context.DangTins.Any(e => e.Id == id);
+        }
+
+        private void PopulateSelectLists(int? phongTroId = null, int? chuTroId = null)
+        {
+            var phongTros = _context.PhongTros.AsQueryable();
+
+            if (User.IsInRole("chutro"))
+            {
+                var currentChuTroId = UserHelper.GetChuTroId(User);
+                phongTros = phongTros.Where(p => p.ChuTroId == currentChuTroId);
+                chuTroId = currentChuTroId;
+            }
+
+            ViewBag.PhongTroId = new SelectList(
+                phongTros,
+                "Id",
+                "TenPhong",
+                phongTroId);
+
+            ViewBag.ChuTroId = new SelectList(
+                _context.ChuTros,
+                "Id",
+                "TenChuTro",
+                chuTroId);
         }
     }
 }

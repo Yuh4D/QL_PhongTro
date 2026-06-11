@@ -135,8 +135,7 @@ namespace WebQLPT.Controllers
         [Authorize(Roles = "admin,chutro")]
         public IActionResult Create()
         {
-            ViewData["KhachThueId"] = new SelectList(_context.KhachThues, "Id", "TenKhach");
-            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "TenPhong");
+            PopulateSelectLists();
             return View();
         }
 
@@ -148,29 +147,46 @@ namespace WebQLPT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,PhongTroId,KhachThueId,NgayBatDau,NgayKetThuc,TienCoc,DieuKhoanThem")] HopDong hopDong)
         {
-            if (!ModelState.IsValid)
+            var phong = await _context.PhongTros
+                .Include(p => p.ChuTro)
+                .FirstOrDefaultAsync(p => p.Id == hopDong.PhongTroId);
+
+            var khach = await _context.KhachThues
+                .FirstOrDefaultAsync(k => k.Id == hopDong.KhachThueId);
+
+            if (phong == null || khach == null)
             {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                return NotFound();
+            }
+
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null ||
+                    phong.ChuTroId != chuTroId.Value ||
+                    khach.PhongTroId != phong.Id)
                 {
-                    Console.WriteLine(error.ErrorMessage);
+                    return Forbid();
                 }
+            }
+
+            if (khach.PhongTroId != phong.Id)
+            {
+                ModelState.AddModelError(
+                    nameof(HopDong.KhachThueId),
+                    "Khách thuê không thuộc phòng đã chọn.");
             }
 
             if (ModelState.IsValid)
             {
-                var phong = await _context.PhongTros
-                    .Include(p => p.ChuTro)
-                    .FirstOrDefaultAsync(p => p.Id == hopDong.PhongTroId);
+                var chuTro = phong.ChuTro;
 
-                var khach = await _context.KhachThues
-                    .FirstOrDefaultAsync(k => k.Id == hopDong.KhachThueId);
-
-                if (phong == null || khach == null)
+                if (chuTro == null)
                 {
                     return NotFound();
                 }
 
-                var chuTro = phong.ChuTro;
                 hopDong.NoiDung = _service.GenerateHopDong(hopDong, phong, khach, chuTro);
 
                 _context.Add(hopDong);
@@ -183,8 +199,7 @@ namespace WebQLPT.Controllers
                 return RedirectToAction(nameof(Details), new { id = hopDong.Id });
             }
 
-            ViewData["KhachThueId"] = new SelectList(_context.KhachThues, "Id", "TenKhach", hopDong.KhachThueId);
-            ViewData["PhongTroId"] = new SelectList(_context.PhongTros, "Id", "TenPhong", hopDong.PhongTroId);
+            PopulateSelectLists(hopDong.PhongTroId, hopDong.KhachThueId);
             return View(hopDong);
         }
 
@@ -217,18 +232,7 @@ namespace WebQLPT.Controllers
                 }
             }
 
-            ViewData["KhachThueId"] =
-                new SelectList(_context.KhachThues,
-                    "Id",
-                    "TenKhach",
-                    hopDong.KhachThueId);
-
-            ViewData["PhongTroId"] =
-                new SelectList(_context.PhongTros,
-                    "Id",
-                    "TenPhong",
-                    hopDong.PhongTroId);
-
+            PopulateSelectLists(hopDong.PhongTroId, hopDong.KhachThueId);
             return View(hopDong);
         }
 
@@ -263,33 +267,67 @@ namespace WebQLPT.Controllers
             {
                 var chuTroId = UserHelper.GetChuTroId(User);
 
-                if (oldHopDong.PhongTro.ChuTroId != chuTroId)
+                if (chuTroId == null ||
+                    oldHopDong.PhongTro.ChuTroId != chuTroId.Value)
                 {
                     return Forbid();
                 }
+            }
+
+            var phong = await _context.PhongTros
+                .Include(p => p.ChuTro)
+                .FirstOrDefaultAsync(p => p.Id == hopDong.PhongTroId);
+
+            var khach = await _context.KhachThues
+                .FirstOrDefaultAsync(k => k.Id == hopDong.KhachThueId);
+
+            if (phong == null || khach == null)
+            {
+                return NotFound();
+            }
+
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null ||
+                    phong.ChuTroId != chuTroId.Value ||
+                    khach.PhongTroId != phong.Id)
+                {
+                    return Forbid();
+                }
+            }
+
+            if (khach.PhongTroId != phong.Id)
+            {
+                ModelState.AddModelError(
+                    nameof(HopDong.KhachThueId),
+                    "Khách thuê không thuộc phòng đã chọn.");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var phong = await _context.PhongTros
-                        .Include(p => p.ChuTro)
-                        .FirstOrDefaultAsync(p => p.Id == hopDong.PhongTroId);
-
-                    var khach = await _context.KhachThues
-                        .FirstOrDefaultAsync(k => k.Id == hopDong.KhachThueId);
-
                     var chuTro = phong.ChuTro;
 
-                    hopDong.NoiDung =
+                    if (chuTro == null)
+                    {
+                        return NotFound();
+                    }
+
+                    oldHopDong.PhongTroId = hopDong.PhongTroId;
+                    oldHopDong.KhachThueId = hopDong.KhachThueId;
+                    oldHopDong.NgayBatDau = hopDong.NgayBatDau;
+                    oldHopDong.NgayKetThuc = hopDong.NgayKetThuc;
+                    oldHopDong.TienCoc = hopDong.TienCoc;
+                    oldHopDong.DieuKhoanThem = hopDong.DieuKhoanThem;
+                    oldHopDong.NoiDung =
                         _service.GenerateHopDong(
-                            hopDong,
+                            oldHopDong,
                             phong,
                             khach,
                             chuTro);
-
-                    _context.Update(hopDong);
 
                     await _context.SaveChangesAsync();
                 }
@@ -306,18 +344,7 @@ namespace WebQLPT.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["KhachThueId"] =
-                new SelectList(_context.KhachThues,
-                    "Id",
-                    "TenKhach",
-                    hopDong.KhachThueId);
-
-            ViewData["PhongTroId"] =
-                new SelectList(_context.PhongTros,
-                    "Id",
-                    "TenPhong",
-                    hopDong.PhongTroId);
-
+            PopulateSelectLists(hopDong.PhongTroId, hopDong.KhachThueId);
             return View(hopDong);
         }
 
@@ -399,6 +426,33 @@ namespace WebQLPT.Controllers
                 .Include(h => h.KhachThue)
                 .FirstOrDefaultAsync(h => h.Id == id);
 
+            if (hopDong == null)
+            {
+                return NotFound();
+            }
+
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                if (chuTroId == null ||
+                    hopDong.PhongTro?.ChuTroId != chuTroId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
+            if (User.IsInRole("khachthue"))
+            {
+                var khachThueId = UserHelper.GetKhachThueId(User);
+
+                if (khachThueId == null ||
+                    hopDong.KhachThueId != khachThueId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
             return new ViewAsPdf("Pdf", hopDong)
             {
                 FileName = $"HopDong_{id}.pdf"
@@ -416,6 +470,40 @@ namespace WebQLPT.Controllers
                 .ToListAsync();
 
             return View(hopDongs);
+        }
+
+        private void PopulateSelectLists(
+            int? phongTroId = null,
+            int? khachThueId = null)
+        {
+            var phongTros = _context.PhongTros.AsQueryable();
+            var khachThues = _context.KhachThues
+                .Include(k => k.PhongTro)
+                .AsQueryable();
+
+            if (User.IsInRole("chutro"))
+            {
+                var chuTroId = UserHelper.GetChuTroId(User);
+
+                phongTros = phongTros
+                    .Where(p => p.ChuTroId == chuTroId);
+
+                khachThues = khachThues
+                    .Where(k => k.PhongTro != null &&
+                                k.PhongTro.ChuTroId == chuTroId);
+            }
+
+            ViewData["PhongTroId"] = new SelectList(
+                phongTros,
+                "Id",
+                "TenPhong",
+                phongTroId);
+
+            ViewData["KhachThueId"] = new SelectList(
+                khachThues,
+                "Id",
+                "TenKhach",
+                khachThueId);
         }
     }
 }

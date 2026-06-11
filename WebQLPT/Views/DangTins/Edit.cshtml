@@ -146,19 +146,22 @@
 
                 </div>
 
-                <div class="col-md-6">
+                @if (User.IsInRole("admin"))
+                {
+                    <div class="col-md-6">
 
-                    <label asp-for="ChuTroId"
-                           class="form-label fw-semibold">
-                        Chủ trọ
-                    </label>
+                        <label asp-for="ChuTroId"
+                               class="form-label fw-semibold">
+                            Chủ trọ
+                        </label>
 
-                    <select asp-for="ChuTroId"
-                            class="form-select"
-                            asp-items="ViewBag.ChuTroId">
-                    </select>
+                        <select asp-for="ChuTroId"
+                                class="form-select"
+                                asp-items="ViewBag.ChuTroId">
+                        </select>
 
-                </div>
+                    </div>
+                }
 
             </div>
 

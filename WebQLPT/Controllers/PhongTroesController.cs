@@ -189,21 +189,42 @@ namespace WebQLPT.Controllers
                 return NotFound();
             }
 
+            var oldPhongTro = await _context.PhongTros
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (oldPhongTro == null)
+            {
+                return NotFound();
+            }
+
             if (User.IsInRole("chutro"))
             {
                 var chuTroId = UserHelper.GetChuTroId(User);
 
-                if (phongTro.ChuTroId != chuTroId)
+                if (chuTroId == null ||
+                    oldPhongTro.ChuTroId != chuTroId.Value)
                 {
                     return Forbid();
                 }
+
+                phongTro.ChuTroId = oldPhongTro.ChuTroId;
+                ModelState.Remove(nameof(PhongTro.ChuTroId));
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(phongTro);
+                    oldPhongTro.TenPhong = phongTro.TenPhong;
+                    oldPhongTro.Gia = phongTro.Gia;
+                    oldPhongTro.TrangThai = phongTro.TrangThai;
+                    oldPhongTro.MoTa = phongTro.MoTa;
+
+                    if (User.IsInRole("admin"))
+                    {
+                        oldPhongTro.ChuTroId = phongTro.ChuTroId;
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -219,7 +240,13 @@ namespace WebQLPT.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ChuTroId"] = new SelectList(_context.ChuTros, "Id", "Id", phongTro.ChuTroId);
+
+            ViewData["ChuTroId"] = new SelectList(
+                _context.ChuTros,
+                "Id",
+                "TenChuTro",
+                phongTro.ChuTroId);
+
             return View(phongTro);
         }
 

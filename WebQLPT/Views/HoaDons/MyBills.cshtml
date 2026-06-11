@@ -19,7 +19,6 @@
     </div>
 
 </div>
-
 <div class="card shadow-sm border-0 rounded-4">
 
     <div class="card-body">
@@ -204,30 +203,3 @@
     </div>
 
 </div>
-
-@section Scripts
-{
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    @if (TempData["Success"] != null)
-    {
-        <script>
-            Swal.fire({
-            icon: 'success',
-            title: 'Thành công',
-            text: '@TempData["Success"]'
-            });
-        </script>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <script>
-            Swal.fire({
-            icon: 'error',
-            title: 'Lỗi',
-            text: '@TempData["Error"]'
-            });
-        </script>
-    }
-}
