@@ -28,7 +28,7 @@ namespace WebQLPT.Controllers
 
         // GET: HopDongs
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string keyword)
         {
             var query = _context.HopDongs
                 .Include(h => h.KhachThue)
@@ -36,38 +36,44 @@ namespace WebQLPT.Controllers
                     .ThenInclude(p => p.ChuTro)
                 .AsQueryable();
 
-            // ADMIN
             if (User.IsInRole("admin"))
             {
-                return View(await query.ToListAsync());
+                // no filter
             }
-
-            // CHỦ TRỌ
-            if (User.IsInRole("chutro"))
+            else if (User.IsInRole("chutro"))
             {
-                var chuTroId =
-                    UserHelper.GetChuTroId(User);
-
+                var chuTroId = UserHelper.GetChuTroId(User);
                 query = query.Where(h =>
                     h.PhongTro != null &&
                     h.PhongTro.ChuTroId == chuTroId);
-
-                return View(await query.ToListAsync());
             }
-
-            // KHÁCH THUÊ
-            if (User.IsInRole("khachthue"))
+            else if (User.IsInRole("khachthue"))
             {
-                var khachId =
-                    UserHelper.GetKhachThueId(User);
-
-                query = query.Where(h =>
-                    h.KhachThueId == khachId);
-
-                return View(await query.ToListAsync());
+                var khachId = UserHelper.GetKhachThueId(User);
+                query = query.Where(h => h.KhachThueId == khachId);
+            }
+            else
+            {
+                return Forbid();
             }
 
-            return Forbid();
+            var list = await query.ToListAsync();
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                keyword = keyword.Trim();
+
+                list = list.Where(h =>
+                    (h.PhongTro != null && (h.PhongTro.TenPhong ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                    (h.KhachThue != null && (h.KhachThue.TenKhach ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                    h.NgayBatDau.ToString("dd/MM/yyyy").Contains(keyword) ||
+                    h.NgayKetThuc.ToString("dd/MM/yyyy").Contains(keyword) ||
+                    h.TienCoc.ToString().Contains(keyword) ||
+                    h.TienCoc.ToString("N0", new System.Globalization.CultureInfo("vi-VN")).Contains(keyword)
+                ).ToList();
+            }
+
+            return View(list);
         }
 
         // GET: HopDongs/Details/5

@@ -10,11 +10,14 @@ namespace WebQLPT.Models
         [Display(Name = "Tên chủ trọ")]
         public string? TenChuTro { get; set; }
 
-
+        [Required]
         [Display(Name = "Số điện thoại")]
         public string? SoDienThoai { get; set; }
+
+        [Required]
         public string? Email { get; set; }
 
+        [Required]
         [Display(Name = "Địa chỉ")]
         public string? DiaChi { get; set; }
 

@@ -19,10 +19,12 @@ namespace WebQLPT.ViewModels
         [Required(ErrorMessage = "Vui lòng nhập tên chủ trọ")]
         public string TenChuTro { get; set; }
 
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
         public string? SoDienThoai { get; set; }
 
+        [Required(ErrorMessage = "Vui lòng nhập email")]
         public string? Email { get; set; }
-
+        [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
         public string? DiaChi { get; set; }
     }
 }

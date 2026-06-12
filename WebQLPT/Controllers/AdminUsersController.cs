@@ -15,9 +15,7 @@ namespace WebQLPT.Controllers
             _context = context;
         }
 
-        // =========================
-        // DANH SÁCH TÀI KHOẢN
-        // =========================
+
         public async Task<IActionResult> Index(string keyword)
         {
             var query = _context.Users
@@ -25,34 +23,27 @@ namespace WebQLPT.Controllers
                 .Include(x => x.KhachThue)
                 .AsQueryable();
 
-            // SEARCH
-            if (!string.IsNullOrWhiteSpace(keyword))
-            {
-                keyword = keyword.Trim();
-
-                query = query.Where(x =>
-                    (x.Username ?? "").Contains(keyword) ||
-                    (x.Role ?? "").Contains(keyword) ||
-
-                    (x.ChuTro != null && 
-                     (x.ChuTro.TenChuTro ?? "").Contains(keyword)) ||
-
-                    (x.KhachThue != null && 
-                     (x.KhachThue.TenKhach ?? "").Contains(keyword))
-                );
-            }
-
-            // SORT
             var users = await query
                 .OrderByDescending(x => x.Id)
                 .ToListAsync();
 
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                keyword = keyword.Trim();
+
+                users = users.Where(x =>
+                    (x.Username ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (x.Role ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (x.ChuTro != null && (x.ChuTro.TenChuTro ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                    (x.KhachThue != null && (x.KhachThue.TenKhach ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                    (x.IsApproved ? "đã duyệt" : "chưa duyệt").Contains(keyword, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
             return View(users);
         }
 
-        // =========================
-        // DUYỆT TÀI KHOẢN
-        // =========================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(int id)
@@ -67,7 +58,7 @@ namespace WebQLPT.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Đã duyệt rồi
+            
             if (user.IsApproved)
             {
                 TempData["Error"] =
@@ -86,9 +77,7 @@ namespace WebQLPT.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================
-        // KHÓA TÀI KHOẢN
-        // =========================
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Lock(int id)
@@ -103,7 +92,7 @@ namespace WebQLPT.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Không khóa admin
+          
             if (user.Role == "admin")
             {
                 TempData["Error"] =
@@ -112,7 +101,7 @@ namespace WebQLPT.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Đã khóa rồi
+            
             if (!user.IsApproved)
             {
                 TempData["Error"] =

@@ -25,7 +25,7 @@ namespace WebQLPT.Controllers
         }
 
         // GET: HoaDons
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string keyword)
         {
             var query = _context.HoaDons
                 .Include(h => h.KhachThue)
@@ -33,35 +33,45 @@ namespace WebQLPT.Controllers
                     .ThenInclude(p => p.ChuTro)
                 .AsQueryable();
 
-      
             if (User.IsInRole("admin"))
             {
-                return View(await query.ToListAsync());
+                // no filter
             }
-
-      
-            if (User.IsInRole("chutro"))
+            else if (User.IsInRole("chutro"))
             {
                 var chuTroId = UserHelper.GetChuTroId(User);
-
-                query = query.Where(h =>
-                    h.PhongTro.ChuTroId == chuTroId);
-
-                return View(await query.ToListAsync());
+                query = query.Where(h => h.PhongTro.ChuTroId == chuTroId);
             }
-
-         
-            if (User.IsInRole("khachthue"))
+            else if (User.IsInRole("khachthue"))
             {
                 var khachThueId = UserHelper.GetKhachThueId(User);
-
-                query = query.Where(h =>
-                    h.KhachThueId == khachThueId);
-
-                return View(await query.ToListAsync());
+                query = query.Where(h => h.KhachThueId == khachThueId);
+            }
+            else
+            {
+                return Forbid();
             }
 
-            return Forbid();
+            var list = await query.ToListAsync();
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                keyword = keyword.Trim();
+
+                list = list.Where(h =>
+                    (h.PhongTro != null && (h.PhongTro.TenPhong ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                    (h.KhachThue != null && (h.KhachThue.TenKhach ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                    (h.TrangThai ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    h.NgayTao.ToString("dd/MM/yyyy").Contains(keyword) ||
+                    h.TongTien.ToString().Contains(keyword) ||
+                    h.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")).Contains(keyword) ||
+                    h.TienPhong.ToString("N0").Contains(keyword) ||
+                    h.TienDien.ToString("N0").Contains(keyword) ||
+                    h.TienNuoc.ToString("N0").Contains(keyword)
+                ).ToList();
+            }
+
+            return View(list);
         }
 
         // GET: HoaDons/Details/5

@@ -40,12 +40,24 @@ namespace WebQLPT.Controllers
                     k.PhongTro.ChuTroId == chuTroId);
             }
 
+            var list = await query.ToListAsync();
+
             if (!string.IsNullOrEmpty(keyword))
             {
-                query = query.Where(k => k.TenKhach.Contains(keyword));
+                keyword = keyword.Trim();
+
+                list = list.Where(k =>
+                    (k.TenKhach ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (k.SoDienThoai ?? "").Contains(keyword) ||
+                    (k.CCCD ?? "").Contains(keyword) ||
+                    (k.PhongTro != null && (k.PhongTro.TenPhong ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                    (k.DangO ? "đang ở" : "đã rời").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (k.NgayThue.HasValue && k.NgayThue.Value.ToString("dd/MM/yyyy").Contains(keyword)) ||
+                    (k.NgayKetThuc.HasValue && k.NgayKetThuc.Value.ToString("dd/MM/yyyy").Contains(keyword))
+                ).ToList();
             }
 
-            return View(await query.ToListAsync());
+            return View(list);
         }
 
         // GET: KhachThues/Details/5

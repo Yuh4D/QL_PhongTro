@@ -160,26 +160,8 @@
                 <div class="container-fluid d-flex align-items-center justify-content-between">
                     @{
                         var controller = ViewContext.RouteData.Values["controller"]?.ToString();
-                    }
-                    @if (controller == "Home")
-                    {
-                        <form asp-controller="Search" asp-action="Index" method="get" class="d-flex w-50">
-                            <input class="form-control form-control-sm me-2"
-                                   type="search"
-                                   name="keyword"
-                                   placeholder="Tìm kiếm..."
-                                   aria-label="Search"
-                                   required>
-                            <button class="btn btn-outline-primary btn-sm" type="submit">
-                                🔍
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <div></div>
-                    }
-                    <div class="d-flex align-items-center">
+                    }      
+                    <div class="ms-auto d-flex align-items-center">
                         <div class="me-3 text-muted small">
 
                             @if (User.Identity.IsAuthenticated && User.Identity != null)

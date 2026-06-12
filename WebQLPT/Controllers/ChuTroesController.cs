@@ -34,14 +34,21 @@ namespace WebQLPT.Controllers
                 query = query.Where(c => c.Id == chuTroId);
             }
 
+            var list = await query.ToListAsync();
+
             if (!string.IsNullOrEmpty(keyword))
             {
-                query = query.Where(c => c.TenChuTro.Contains(keyword)
-                                      || c.SoDienThoai.Contains(keyword)
-                                      || c.Email.Contains(keyword));
+                keyword = keyword.Trim();
+
+                list = list.Where(c =>
+                    (c.TenChuTro ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (c.SoDienThoai ?? "").Contains(keyword) ||
+                    (c.Email ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (c.DiaChi ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
             }
 
-            return View(await query.ToListAsync());
+            return View(list);
         }
 
         // GET: ChuTroes/Details/5

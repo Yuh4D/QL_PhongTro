@@ -59,12 +59,23 @@ namespace WebQLPT.Controllers
                 }
             }
 
+            var list = await query.ToListAsync();
+
             if (!string.IsNullOrEmpty(keyword))
             {
-                query = query.Where(p => p.TenPhong.Contains(keyword));
+                keyword = keyword.Trim();
+
+                list = list.Where(p =>
+                    (p.TenPhong ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (p.MoTa ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    p.Gia.ToString().Contains(keyword) ||
+                    p.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")).Contains(keyword) ||
+                    p.TrangThai.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    (p.ChuTro != null && (p.ChuTro.TenChuTro ?? "").Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
             }
 
-            return View(await query.ToListAsync());
+            return View(list);
         }
 
         // GET: PhongTroes/Details/5
