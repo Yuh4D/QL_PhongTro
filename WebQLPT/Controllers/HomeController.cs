@@ -67,6 +67,14 @@ namespace WebQLPT.Controllers
                             h.PhongTro.ChuTroId == chuTroId &&
                             h.TrangThai != "Đã thanh toán");
 
+                ViewBag.DoanhThu =
+                    _context.HoaDons
+                        .Where(h =>
+                            h.PhongTro != null &&
+                            h.PhongTro.ChuTroId == chuTroId &&
+                            h.TrangThai == "Đã thanh toán")
+                        .Sum(h => (decimal?)h.TongTien) ?? 0;
+
                 return View();
             }
 
